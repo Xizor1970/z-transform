@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Definition — The Z-Transform</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="nav">
+    <a href="index.html">Home</a>
+    <a href="definition.html" class="active">Definition</a>
+    <a href="properties.html">Properties</a>
+    <a href="common-pairs.html">Pairs</a>
+    <a href="roc.html">ROC</a>
+    <a href="inverse.html">Inverse</a>
+    <a href="transfer-functions.html">Transfer Fn</a>
+    <a href="stability.html">Stability</a>
+    <a href="filters.html">Filters</a>
+    <a href="applications.html">Applications</a>
+    <a href="animations.html">Interactive</a>
+</nav>
+
+<header class="hero">
+    <h1>Definition</h1>
+    <p class="subtitle">The forward Z-transform, its inverse, and why we need a complex variable</p>
+</header>
+
+<main class="content">
+
+    <div class="stat-strip">
+        <div class="stat-card">
+            <span class="number">1730</span>
+            <span class="label">De Moivre's work</span>
+        </div>
+        <div class="stat-card">
+            <span class="number">1947</span>
+            <span class="label">Hurewicz formalises</span>
+        </div>
+        <div class="stat-card">
+            <span class="number">z⁻¹</span>
+            <span class="label">Unit delay</span>
+        </div>
+        <div class="stat-card">
+            <span class="number">2</span>
+            <span class="label">Forms (bilateral/unilateral)</span>
+        </div>
+    </div>
+
+    <h2>The Bilateral Z-Transform</h2>
+
+    <div class="explanation">
+        <h4>The defining equation</h4>
+        <p>Given a discrete-time signal x[n] defined for all integers n, its bilateral (two-sided) Z-transform is:</p>
+    </div>
+
+    <div class="formula">
+        X(z) = Σ<sub>n=−∞</sub><sup>∞</sup> x[n] · z<sup>−n</sup>
+    </div>
+
+    <div class="explanation">
+        <h4>Breaking it down</h4>
+        <p><strong>x[n]</strong> is your sequence — a list of numbers indexed by integer n. It could be a sampled audio signal, sensor readings, or stock prices at discrete intervals.</p>
+        <p><strong>z</strong> is a complex variable. Not just a real number — a full complex number with magnitude and phase. This is crucial: by allowing z to roam the complex plane, we get a complete picture of the signal's structure.</p>
+        <p><strong>z<sup>−n</sup></strong> means we're weighting each sample x[n] by a complex exponential that depends on its position. Samples far in the future (large positive n) get multiplied by high negative powers of z; samples far in the past get high positive powers.</p>
+    </div>
+
+    <div class="analogy">Think of the Z-transform as a "generating function" for your sequence — the same tool mathematicians use to encode the Fibonacci numbers. The coefficient of z⁻ⁿ in the power series is exactly x[n]. It's like storing an entire infinite sequence inside a single algebraic expression, the way a seed contains an entire tree.</div>
+
+    <h2>The Unilateral Z-Transform</h2>
+
+    <div class="explanation">
+        <h4>The causal-only version</h4>
+        <p>In practice, most systems are causal — they don't depend on future inputs. For these, we use the unilateral (one-sided) Z-transform:</p>
+    </div>
+
+    <div class="formula">
+        X(z) = Σ<sub>n=0</sub><sup>∞</sup> x[n] · z<sup>−n</sup>
+    </div>
+
+    <div class="explanation">
+        <h4>Why prefer unilateral?</h4>
+        <p>The sum starts at n = 0 instead of −∞. This has two practical advantages:</p>
+        <ul>
+            <li>It naturally handles <strong>initial conditions</strong> in difference equations — the time-shift property becomes more nuanced but lets us encode x[−1], x[−2], etc.</li>
+            <li>The region of convergence is always the <strong>exterior</strong> of a circle, simplifying analysis.</li>
+        </ul>
+        <p>The unilateral form is standard in control theory and most DSP textbooks. When someone says "the Z-transform" without qualification, they usually mean the unilateral form for causal signals.</p>
+    </div>
+
+    <h2>Why Complex z?</h2>
+
+    <div class="explanation">
+        <h4>The unit circle is the frequency axis</h4>
+        <p>When we evaluate X(z) on the unit circle — that is, when |z| = 1 and z = e<sup>jω</sup> — we get the Discrete-Time Fourier Transform (DTFT):</p>
+    </div>
+
+    <div class="formula">
+        X(e<sup>jω</sup>) = Σ<sub>n=−∞</sub><sup>∞</sup> x[n] · e<sup>−jωn</sup> = DTFT{x[n]}
+    </div>
+
+    <div class="explanation">
+        <h4>Beyond the unit circle</h4>
+        <p>But the Z-transform is more general than the DTFT. Points inside the unit circle (|z| < 1) correspond to exponentially growing weights on future samples. Points outside (|z| > 1) correspond to exponentially growing weights on past samples. This extra freedom lets us:</p>
+        <ul>
+            <li>Analyse unstable systems whose DTFT doesn't converge</li>
+            <li>Factor transfer functions into poles and zeros</li>
+            <li>Determine stability from pole locations</li>
+            <li>Design systems with prescribed frequency responses</li>
+        </ul>
+    </div>
+
+    <div class="analogy">If the DTFT is like viewing a landscape at ground level (you only see what's at your horizon), the Z-transform is like having a drone that can fly to any altitude. At ground level (the unit circle) you see frequency content. Fly higher (|z| > 1) and you emphasise the past; descend below ground (|z| < 1) and you emphasise the future. The full aerial map is the Z-transform.</div>
+
+    <h2>Historical Context</h2>
+
+    <div class="explanation">
+        <h4>From generating functions to digital control</h4>
+        <p>The mathematical machinery behind the Z-transform dates to Abraham de Moivre's work on generating functions around 1730. But the explicit connection to sampled-data systems was made by Witold Hurewicz in 1947, and independently formalised by several researchers in the early 1950s including Ragazzini and Zadeh.</p>
+        <p>The name "Z-transform" appears to have been coined by Ragazzini and Zadeh in their 1952 paper. The choice of the letter "z" likely follows from its use as the complex variable in generating functions — a convention going back to Euler.</p>
+    </div>
+
+    <h2>Relationship to Other Transforms</h2>
+
+    <div class="explanation">
+        <h4>The family tree</h4>
+        <p>The Z-transform sits in a precise relationship with other transforms:</p>
+        <ul>
+            <li><strong>Laplace → Z-transform:</strong> Replace s with z via z = e<sup>sT</sup> where T is the sampling period. The Z-transform is the Laplace transform of a sampled signal.</li>
+            <li><strong>Z-transform → DTFT:</strong> Evaluate on the unit circle: z = e<sup>jω</sup></li>
+            <li><strong>DTFT → DFT:</strong> Sample the DTFT at N equally-spaced frequencies</li>
+        </ul>
+        <p>Each step is a restriction: the Laplace transform works on the full s-plane, the Z-transform on the z-plane, the DTFT on the unit circle, and the DFT at discrete points on that circle.</p>
+    </div>
+
+    <div class="formula">
+        Laplace (continuous, s-plane)
+        → Z-transform (discrete, z-plane)
+        → DTFT (unit circle, continuous ω)
+        → DFT (unit circle, N points)
+    </div>
+
+    <div class="question-box">
+        <h4>Open Questions</h4>
+        <ul>
+            <li>Can the Z-transform be meaningfully extended to non-uniform sampling intervals?</li>
+            <li>What is the optimal variable-rate analogue of the Z-transform for event-driven systems?</li>
+            <li>How do fractional-order Z-transforms relate to fractional calculus?</li>
+        </ul>
+    </div>
+
+    <div class="speculation-box">
+        <h4>The Z-transform as a bridge between continuous and discrete worlds</h4>
+        <p>The relationship z = e<sup>sT</sup> is not merely a mathematical convenience — it reveals something deep. The mapping wraps the left half of the s-plane inside the unit circle and the right half outside. This means stability conditions transform naturally: stable continuous systems (poles in the left half-plane) map to stable discrete systems (poles inside the unit circle). The unit circle is where continuous frequency becomes discrete frequency. In a sense, sampling <em>is</em> the exponential map — and the Z-transform is what makes that geometric fact computationally useful.</p>
+        <p class="caveat">This geometric interpretation is well-established mathematically, but the philosophical implications — that discrete and continuous systems are "the same" up to an exponential map — remain a matter of pedagogical emphasis rather than settled consensus.</p>
+    </div>
+
+    <div class="page-nav">
+        <a href="index.html" class="prev">← Home</a>
+        <a href="properties.html" class="next">Properties →</a>
+    </div>
+
+</main>
+
+<footer class="footer">
+    The Z-Transform Knowledge Base
+</footer>
+
+</body>
+</html>

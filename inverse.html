@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inverse Z-Transform — The Z-Transform</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="nav">
+    <a href="index.html">Home</a>
+    <a href="definition.html">Definition</a>
+    <a href="properties.html">Properties</a>
+    <a href="common-pairs.html">Pairs</a>
+    <a href="roc.html">ROC</a>
+    <a href="inverse.html" class="active">Inverse</a>
+    <a href="transfer-functions.html">Transfer Fn</a>
+    <a href="stability.html">Stability</a>
+    <a href="filters.html">Filters</a>
+    <a href="applications.html">Applications</a>
+    <a href="animations.html">Interactive</a>
+</nav>
+
+<header class="hero">
+    <h1>Inverse Z-Transform</h1>
+    <p class="subtitle">Three methods to recover x[n] from X(z) — partial fractions, power series, and contour integration</p>
+</header>
+
+<main class="content">
+
+    <div class="stat-strip">
+        <div class="stat-card">
+            <span class="number">3</span>
+            <span class="label">Methods</span>
+        </div>
+        <div class="stat-card">
+            <span class="number">PFE</span>
+            <span class="label">Most practical</span>
+        </div>
+        <div class="stat-card">
+            <span class="number">∮</span>
+            <span class="label">Contour integral</span>
+        </div>
+    </div>
+
+    <h2>The Formal Inverse</h2>
+
+    <div class="formula">
+        x[n] = (1/2πj) ∮<sub>C</sub> X(z) · z<sup>n−1</sup> dz
+    </div>
+
+    <div class="explanation">
+        <h4>The contour integral definition</h4>
+        <p>The formal inverse Z-transform is a contour integral around a closed path C within the ROC. While mathematically elegant, we rarely compute this directly. Instead, we use three practical methods that avoid explicit contour integration in most cases.</p>
+    </div>
+
+    <h2>Method 1: Partial Fraction Expansion</h2>
+
+    <div class="explanation">
+        <h4>The workhorse method</h4>
+        <p>For rational X(z) = N(z)/D(z), this is the most commonly used approach:</p>
+        <ol>
+            <li>Ensure X(z)/z is a proper fraction (degree of numerator < degree of denominator). If not, perform polynomial long division first.</li>
+            <li>Factor the denominator to find poles</li>
+            <li>Decompose X(z)/z into partial fractions</li>
+            <li>Multiply back by z</li>
+            <li>Look up each term in the standard pairs table</li>
+            <li>Use the ROC to determine causal vs anti-causal for each term</li>
+        </ol>
+    </div>
+
+    <h3>Example: Distinct Poles</h3>
+
+    <div class="explanation">
+        <h4>Find x[n] given X(z) = 2z² / [(z−½)(z−¼)], ROC: |z| > ½</h4>
+    </div>
+
+    <div class="formula">
+        X(z)/z = 2z / [(z−½)(z−¼)]
+        <br><br>
+        = A/(z−½) + B/(z−¼)
+        <br><br>
+        A = [2z/(z−¼)]<sub>z=½</sub> = 2(½)/(½−¼) = 4
+        <br><br>
+        B = [2z/(z−½)]<sub>z=¼</sub> = 2(¼)/(¼−½) = −2
+        <br><br>
+        X(z) = 4z/(z−½) − 2z/(z−¼)
+        <br><br>
+        x[n] = 4·(½)ⁿ·u[n] − 2·(¼)ⁿ·u[n]
+    </div>
+
+    <div class="explanation">
+        <p>Both terms are causal (u[n]) because the ROC is |z| > ½, which is the exterior of both poles.</p>
+    </div>
+
+    <h3>Example: Repeated Poles</h3>
+
+    <div class="explanation">
+        <h4>When the denominator has (z−a)ᵏ</h4>
+        <p>For a pole of multiplicity k at z = a:</p>
+    </div>
+
+    <div class="formula">
+        X(z)/z = ... + A₁/(z−a) + A₂/(z−a)² + ... + Aₖ/(z−a)ᵏ
+        <br><br>
+        Aₘ = (1/(k−m)!) · d<sup>k−m</sup>/dz<sup>k−m</sup> [(z−a)ᵏ · X(z)/z]<sub>z=a</sub>
+    </div>
+
+    <div class="explanation">
+        <p>The term Aₘ/(z−a)ᵐ corresponds to:</p>
+    </div>
+
+    <div class="formula">
+        Z⁻¹{Aₘ · z/(z−a)ᵐ} = Aₘ · C(n,m−1) · aⁿ⁻ᵐ⁺¹ · u[n]
+    </div>
+
+    <div class="explanation">
+        <p>where C(n,m−1) is the binomial coefficient. For a double pole (k=2), the inverse includes both aⁿ and n·aⁿ terms.</p>
+    </div>
+
+    <div class="analogy">Partial fractions are like disassembling a complex machine into standard components. Each fraction A·z/(z−a) is a "standard part" whose behavior (aⁿ) you already know. You identify the parts, look up their behavior in the catalog, and the total behavior is the sum. The ROC tells you which direction each part runs (forward in time or backward).</div>
+
+    <h2>Method 2: Power Series Expansion</h2>
+
+    <div class="explanation">
+        <h4>Direct long division</h4>
+        <p>Since X(z) = Σ x[n]·z⁻ⁿ, the coefficients of z⁻ⁿ in the Laurent series ARE the signal values x[n]. To find them, perform polynomial long division of N(z) by D(z):</p>
+        <ul>
+            <li>For causal signals: divide in descending powers of z (gives z⁻¹, z⁻², ...)</li>
+            <li>For anti-causal signals: divide in ascending powers of z (gives z, z², ...)</li>
+        </ul>
+        <p>This gives you x[n] one sample at a time. It's useful when:</p>
+        <ul>
+            <li>You only need the first few samples</li>
+            <li>The partial fraction approach is algebraically messy</li>
+            <li>X(z) is not rational</li>
+        </ul>
+    </div>
+
+    <h3>Example</h3>
+
+    <div class="formula">
+        X(z) = (1 + 2z⁻¹) / (1 − z⁻¹ + 0.5z⁻²)
+        <br><br>
+        Long division: 1 + 3z⁻¹ + 2.5z⁻² + 0.75z⁻³ + ...
+        <br><br>
+        → x[0]=1, x[1]=3, x[2]=2.5, x[3]=0.75, ...
+    </div>
+
+    <h2>Method 3: Contour Integration (Residues)</h2>
+
+    <div class="explanation">
+        <h4>When you need the closed form</h4>
+        <p>Apply the residue theorem to the formal inverse:</p>
+    </div>
+
+    <div class="formula">
+        x[n] = Σ Residues of [X(z)·z<sup>n−1</sup>] at poles inside C
+    </div>
+
+    <div class="explanation">
+        <p>For a simple pole at z = a:</p>
+    </div>
+
+    <div class="formula">
+        Residue at z = a: lim<sub>z→a</sub> (z−a) · X(z) · z<sup>n−1</sup>
+    </div>
+
+    <div class="explanation">
+        <h4>When to use residues</h4>
+        <p>This method is primarily used in theoretical derivations. In practice, partial fractions gives the same result with less machinery. But the residue approach is essential for:</p>
+        <ul>
+            <li>Proving general results about inverse transforms</li>
+            <li>Non-rational X(z) where partial fractions don't apply</li>
+            <li>Computer algebra systems that evaluate contour integrals symbolically</li>
+        </ul>
+    </div>
+
+    <h2>Choosing a Method</h2>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Situation</th>
+                <th>Best Method</th>
+                <th>Why</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>Rational X(z), distinct poles</td><td>Partial fractions</td><td>Clean closed form, covers most cases</td></tr>
+            <tr><td>Rational X(z), repeated poles</td><td>Partial fractions (with derivatives)</td><td>Still manageable, gives closed form</td></tr>
+            <tr><td>Only need first N samples</td><td>Power series (long division)</td><td>Direct, no algebra, works for any X(z)</td></tr>
+            <tr><td>Non-rational X(z)</td><td>Power series or residues</td><td>Partial fractions require rational form</td></tr>
+            <tr><td>Proving theorems</td><td>Contour integration</td><td>Most general, rigorous</td></tr>
+            <tr><td>Computer implementation</td><td>Power series (recursion)</td><td>Natural for code, iterative</td></tr>
+        </tbody>
+    </table>
+
+    <div class="question-box">
+        <h4>Open Questions</h4>
+        <ul>
+            <li>Can machine learning approximate inverse Z-transforms for non-rational functions faster than symbolic methods?</li>
+            <li>What are the best numerical algorithms for inverse Z-transform when poles cluster near the unit circle?</li>
+            <li>Is there a "fast inverse Z-transform" analogous to the inverse FFT for arbitrary evaluation points?</li>
+        </ul>
+    </div>
+
+    <div class="speculation-box">
+        <h4>The computational perspective: recursion IS the inverse transform</h4>
+        <p>In digital implementations, we never actually "compute" an inverse Z-transform. Instead, we implement the difference equation directly — which IS the inverse transform being computed sample by sample in real time. When we write y[n] = x[n] + 0.5·y[n−1], we're computing the inverse of Y(z) = X(z)/(1 − 0.5z⁻¹) without ever mentioning z. The power series method is thus not just a mathematical technique — it's literally what your hardware does every clock cycle.</p>
+        <p class="caveat">This perspective blurs the line between analysis and implementation. Formally, the inverse Z-transform and a recursive computation are distinct concepts that happen to produce the same outputs. The distinction matters for theoretical properties (convergence, causality) even if the numbers agree.</p>
+    </div>
+
+    <div class="page-nav">
+        <a href="roc.html" class="prev">← ROC</a>
+        <a href="transfer-functions.html" class="next">Transfer Functions →</a>
+    </div>
+
+</main>
+
+<footer class="footer">
+    The Z-Transform Knowledge Base
+</footer>
+
+</body>
+</html>

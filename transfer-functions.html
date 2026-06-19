@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transfer Functions — The Z-Transform</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="nav">
+    <a href="index.html">Home</a>
+    <a href="definition.html">Definition</a>
+    <a href="properties.html">Properties</a>
+    <a href="common-pairs.html">Pairs</a>
+    <a href="roc.html">ROC</a>
+    <a href="inverse.html">Inverse</a>
+    <a href="transfer-functions.html" class="active">Transfer Fn</a>
+    <a href="stability.html">Stability</a>
+    <a href="filters.html">Filters</a>
+    <a href="applications.html">Applications</a>
+    <a href="animations.html">Interactive</a>
+</nav>
+
+<header class="hero">
+    <h1>Transfer Functions</h1>
+    <p class="subtitle">Poles, zeros, and the complete characterisation of discrete-time LTI systems</p>
+</header>
+
+<main class="content">
+
+    <div class="stat-strip">
+        <div class="stat-card">
+            <span class="number">H(z)</span>
+            <span class="label">Transfer function</span>
+        </div>
+        <div class="stat-card">
+            <span class="number">Y/X</span>
+            <span class="label">Output / Input</span>
+        </div>
+        <div class="stat-card">
+            <span class="number">○ ×</span>
+            <span class="label">Zeros & Poles</span>
+        </div>
+    </div>
+
+    <h2>From Difference Equations to H(z)</h2>
+
+    <div class="explanation">
+        <h4>The standard LTI difference equation</h4>
+        <p>Every linear time-invariant (LTI) discrete system can be described by a difference equation:</p>
+    </div>
+
+    <div class="formula">
+        y[n] + a₁y[n−1] + ... + aₙy[n−N] = b₀x[n] + b₁x[n−1] + ... + bₘx[n−M]
+    </div>
+
+    <div class="explanation">
+        <h4>Applying the Z-transform</h4>
+        <p>Take the Z-transform of both sides, using the time-shift property (x[n−k] → z⁻ᵏX(z)):</p>
+    </div>
+
+    <div class="formula">
+        Y(z)[1 + a₁z⁻¹ + ... + aₙz⁻ᴺ] = X(z)[b₀ + b₁z⁻¹ + ... + bₘz⁻ᴹ]
+        <br><br>
+        H(z) = Y(z)/X(z) = [b₀ + b₁z⁻¹ + ... + bₘz⁻ᴹ] / [1 + a₁z⁻¹ + ... + aₙz⁻ᴺ]
+    </div>
+
+    <div class="explanation">
+        <p>The transfer function H(z) completely characterises the system's input-output behaviour. Given any input X(z), the output is simply Y(z) = H(z)·X(z). This is the convolution theorem in action.</p>
+    </div>
+
+    <div class="analogy">A transfer function is like a recipe card for a machine. You don't need to know the internal gears and springs — the card tells you: for any input ingredient (X(z)), here's the output product (Y(z) = H(z)·X(z)). Different machines (systems) have different recipe cards (transfer functions), but the format is universal.</div>
+
+    <h2>Poles and Zeros</h2>
+
+    <div class="explanation">
+        <h4>The DNA of a system</h4>
+        <p>Writing H(z) in factored form:</p>
+    </div>
+
+    <div class="formula">
+        H(z) = b₀ · [(z − z₁)(z − z₂)···(z − zₘ)] / [(z − p₁)(z − p₂)···(z − pₙ)]
+    </div>
+
+    <div class="explanation">
+        <ul>
+            <li><strong>Zeros</strong> (z₁, z₂, ..., zₘ): values where H(z) = 0. The system completely blocks input components at these complex frequencies.</li>
+            <li><strong>Poles</strong> (p₁, p₂, ..., pₙ): values where H(z) → ∞. The system infinitely amplifies (resonates at) these complex frequencies.</li>
+            <li><strong>Gain</strong> (b₀): overall scaling factor.</li>
+        </ul>
+        <p>The pole-zero plot — poles marked as × and zeros as ○ on the z-plane — is the most compact and informative representation of a discrete system. From it you can read off stability, frequency response, impulse response shape, and more.</p>
+    </div>
+
+    <h2>What Poles Tell You</h2>
+
+    <div class="explanation">
+        <h4>Each pole contributes a mode to the impulse response</h4>
+        <p>A pole at z = p contributes a term proportional to pⁿ in the impulse response h[n]:</p>
+        <ul>
+            <li><strong>Real pole, |p| < 1:</strong> Exponentially decaying mode. Closer to 0 → faster decay.</li>
+            <li><strong>Real pole, |p| > 1:</strong> Exponentially growing mode — unstable!</li>
+            <li><strong>Real pole, p > 0:</strong> Monotone (same-sign) decay/growth</li>
+            <li><strong>Real pole, p < 0:</strong> Alternating-sign decay/growth</li>
+            <li><strong>Complex conjugate pair:</strong> Oscillatory mode. Angle determines frequency, magnitude determines decay rate.</li>
+            <li><strong>Pole at |p| = 1:</strong> Marginally stable — persistent oscillation (neither growing nor decaying)</li>
+        </ul>
+    </div>
+
+    <div class="formula">
+        Pole at z = r·e<sup>jθ</sup>:
+        <br>
+        — frequency of oscillation: ω = θ (radians/sample)
+        <br>
+        — decay rate: rⁿ (envelope)
+        <br>
+        — period: 2π/θ samples
+    </div>
+
+    <h2>What Zeros Tell You</h2>
+
+    <div class="explanation">
+        <h4>Zeros shape the frequency response</h4>
+        <p>While poles determine the natural modes (impulse response), zeros sculpt the frequency response:</p>
+        <ul>
+            <li><strong>Zero on the unit circle at angle θ:</strong> The system has zero gain at frequency ω = θ (a notch)</li>
+            <li><strong>Zero inside unit circle:</strong> Minimum-phase — the system has the least possible phase shift for its magnitude response</li>
+            <li><strong>Zero outside unit circle:</strong> Non-minimum-phase — extra phase shift occurs</li>
+            <li><strong>Zero at z = −1:</strong> Blocks the Nyquist frequency (highest representable frequency)</li>
+            <li><strong>Zero at z = 1:</strong> Blocks DC (removes the mean)</li>
+        </ul>
+    </div>
+
+    <div class="analogy">Poles are resonances — pluck the system there and it rings. Zeros are absorbers — signals at those frequencies vanish. A pole-zero plot is like an acoustic map of a room: poles mark where sounds amplify (resonant frequencies) and zeros mark where sounds cancel (dead spots). Move a pole closer to the unit circle and the resonance sharpens; put a zero on the circle and you get perfect silence at that frequency.</div>
+
+    <h2>Frequency Response from H(z)</h2>
+
+    <div class="explanation">
+        <h4>Evaluate on the unit circle</h4>
+        <p>The frequency response H(e<sup>jω</sup>) — magnitude and phase as functions of frequency — is obtained by evaluating H(z) on the unit circle:</p>
+    </div>
+
+    <div class="formula">
+        H(e<sup>jω</sup>) = H(z)|<sub>z=e<sup>jω</sup></sub>
+        <br><br>
+        |H(e<sup>jω</sup>)| = magnitude response
+        <br>
+        ∠H(e<sup>jω</sup>) = phase response
+    </div>
+
+    <div class="explanation">
+        <h4>Geometric interpretation</h4>
+        <p>At any frequency ω, the magnitude response is:</p>
+    </div>
+
+    <div class="formula">
+        |H(e<sup>jω</sup>)| = |b₀| · [product of distances from e<sup>jω</sup> to zeros] / [product of distances from e<sup>jω</sup> to poles]
+    </div>
+
+    <div class="explanation">
+        <p>As e<sup>jω</sup> sweeps around the unit circle:</p>
+        <ul>
+            <li>When it passes near a pole → denominator shrinks → gain peaks (resonance)</li>
+            <li>When it passes near a zero → numerator shrinks → gain dips (anti-resonance)</li>
+            <li>A pole on the circle → infinite gain (system is unstable/marginally stable at that frequency)</li>
+            <li>A zero on the circle → zero gain (perfect null at that frequency)</li>
+        </ul>
+    </div>
+
+    <h2>Common Transfer Function Forms</h2>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>System</th>
+                <th>H(z)</th>
+                <th>Character</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>Pure delay</td><td><code>z⁻ᵏ</code></td><td>Delays input by k samples, no distortion</td></tr>
+            <tr><td>First-order lowpass</td><td><code>(1−a)/(1−a·z⁻¹)</code></td><td>One pole at z=a, smooths input</td></tr>
+            <tr><td>First-order highpass</td><td><code>(1−z⁻¹)/(1−a·z⁻¹)</code></td><td>Zero at z=1 blocks DC</td></tr>
+            <tr><td>Moving average (FIR)</td><td><code>(1/N)·(1−z⁻ᴺ)/(1−z⁻¹)</code></td><td>N zeros on unit circle, averages N samples</td></tr>
+            <tr><td>Resonator</td><td><code>1/(1−2r·cos(θ)z⁻¹+r²z⁻²)</code></td><td>Complex poles at r·e<sup>±jθ</sup>, peak at ω=θ</td></tr>
+            <tr><td>Notch filter</td><td><code>(1−2cos(θ)z⁻¹+z⁻²)/(1−2r·cos(θ)z⁻¹+r²z⁻²)</code></td><td>Zeros on circle at ω=θ, removes one frequency</td></tr>
+            <tr><td>Integrator (accumulator)</td><td><code>1/(1−z⁻¹)</code></td><td>Pole at z=1, running sum</td></tr>
+            <tr><td>Differentiator</td><td><code>1−z⁻¹</code></td><td>Zero at z=1, approximates derivative</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Cascade and Parallel Forms</h2>
+
+    <div class="explanation">
+        <h4>Building complex systems from simple blocks</h4>
+        <p>Because convolution becomes multiplication:</p>
+        <ul>
+            <li><strong>Cascade (series):</strong> H(z) = H₁(z) · H₂(z) · ... · Hₖ(z)</li>
+            <li><strong>Parallel:</strong> H(z) = H₁(z) + H₂(z) + ... + Hₖ(z)</li>
+            <li><strong>Feedback:</strong> H(z) = G(z) / [1 + G(z)·F(z)] (closed-loop)</li>
+        </ul>
+        <p>This is why the Z-transform is indispensable for system design: complex systems decompose into simple, analysable building blocks whose individual transfer functions compose algebraically.</p>
+    </div>
+
+    <div class="question-box">
+        <h4>Open Questions</h4>
+        <ul>
+            <li>How should pole-zero representations be extended for time-varying systems?</li>
+            <li>Can deep learning discover optimal pole-zero configurations that humans wouldn't design?</li>
+            <li>What's the minimum number of poles and zeros needed to approximate a given magnitude response to within ε?</li>
+        </ul>
+    </div>
+
+    <div class="speculation-box">
+        <h4>Transfer functions as a universal language</h4>
+        <p>The transfer function concept transcends DSP. Economists model fiscal policy with H(z) relating stimulus to GDP response. Epidemiologists model infection dynamics with pole-zero systems. Neuroscientists describe neural circuits as cascaded transfer functions. Anywhere you have a linear system driven by discrete events, H(z) is the natural language. The fact that stability, frequency selectivity, and transient behaviour all read off the same diagram — the pole-zero plot — makes it one of the most information-dense representations in applied mathematics.</p>
+        <p class="caveat">The "universality" claim applies strictly to LTI systems. Most real-world systems are nonlinear, and transfer functions only characterise their linearised approximations around operating points.</p>
+    </div>
+
+    <div class="page-nav">
+        <a href="inverse.html" class="prev">← Inverse</a>
+        <a href="stability.html" class="next">Stability →</a>
+    </div>
+
+</main>
+
+<footer class="footer">
+    The Z-Transform Knowledge Base
+</footer>
+
+</body>
+</html>

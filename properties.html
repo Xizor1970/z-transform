@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Properties — The Z-Transform</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="nav">
+    <a href="index.html">Home</a>
+    <a href="definition.html">Definition</a>
+    <a href="properties.html" class="active">Properties</a>
+    <a href="common-pairs.html">Pairs</a>
+    <a href="roc.html">ROC</a>
+    <a href="inverse.html">Inverse</a>
+    <a href="transfer-functions.html">Transfer Fn</a>
+    <a href="stability.html">Stability</a>
+    <a href="filters.html">Filters</a>
+    <a href="applications.html">Applications</a>
+    <a href="animations.html">Interactive</a>
+</nav>
+
+<header class="hero">
+    <h1>Properties</h1>
+    <p class="subtitle">The operational rules that make the Z-transform a powerful computational tool</p>
+</header>
+
+<main class="content">
+
+    <div class="stat-strip">
+        <div class="stat-card">
+            <span class="number">12+</span>
+            <span class="label">Key Properties</span>
+        </div>
+        <div class="stat-card">
+            <span class="number">z⁻ᵏ</span>
+            <span class="label">Time shift</span>
+        </div>
+        <div class="stat-card">
+            <span class="number">×</span>
+            <span class="label">Convolution → Multiplication</span>
+        </div>
+    </div>
+
+    <div class="explanation">
+        <h4>Why properties matter</h4>
+        <p>The Z-transform's power comes not from computing the infinite sum directly, but from its algebraic properties. These let you translate operations on sequences (shifting, scaling, convolving) into simple algebraic operations on X(z). Every property here turns a hard time-domain problem into an easy z-domain manipulation.</p>
+    </div>
+
+    <h2>Linearity</h2>
+
+    <div class="formula">
+        Z{a·x[n] + b·y[n]} = a·X(z) + b·Y(z)
+    </div>
+
+    <div class="explanation">
+        <h4>Superposition carries through</h4>
+        <p>If you scale a signal by a constant or add two signals, the Z-transform respects both operations. This is the most basic property but also the most used — it lets you decompose complex signals into simple parts, transform each, and recombine.</p>
+        <p>The ROC of the sum contains at least the intersection of the individual ROCs (and may be larger if cancellation occurs).</p>
+    </div>
+
+    <h2>Time Shifting</h2>
+
+    <div class="formula">
+        Z{x[n − k]} = z<sup>−k</sup> · X(z)    (bilateral)
+    </div>
+
+    <div class="explanation">
+        <h4>Delay becomes multiplication by z⁻ᵏ</h4>
+        <p>Shifting a sequence by k samples to the right multiplies its Z-transform by z⁻ᵏ. This is the single most important property for analysing digital systems — every delay element in a block diagram translates to a factor of z⁻¹.</p>
+        <p>For the <strong>unilateral</strong> Z-transform, right shifts introduce initial condition terms:</p>
+    </div>
+
+    <div class="formula">
+        Z{x[n−1]} = z⁻¹·X(z) + x[−1]     (unilateral)
+        <br>
+        Z{x[n−2]} = z⁻²·X(z) + x[−2] + x[−1]·z⁻¹
+    </div>
+
+    <div class="analogy">Time shifting in the Z-domain is like a bookmark. The z⁻¹ factor doesn't change the book's content — it just marks "start reading one page later." Stack k bookmarks (z⁻ᵏ) and you skip k pages. The text (signal shape) is unchanged; only your reading position shifts.</div>
+
+    <h2>Time Reversal</h2>
+
+    <div class="formula">
+        Z{x[−n]} = X(z⁻¹)     ROC: 1/R<sub>x</sub>
+    </div>
+
+    <div class="explanation">
+        <h4>Flipping the sequence inverts z</h4>
+        <p>Reversing a sequence in time replaces z with 1/z. The ROC inverts too: if X(z) converges for |z| > r, then X(1/z) converges for |z| < 1/r. This is why causal and anti-causal sequences have complementary ROCs.</p>
+    </div>
+
+    <h2>Scaling in z (Multiplication by aⁿ)</h2>
+
+    <div class="formula">
+        Z{aⁿ · x[n]} = X(z/a)     ROC: |a|·R<sub>x</sub>
+    </div>
+
+    <div class="explanation">
+        <h4>Exponential weighting rescales the z-plane</h4>
+        <p>Multiplying your sequence by an exponential aⁿ stretches or compresses the z-plane. If a > 1, poles and zeros move outward. If a < 1, they move inward. This is how we relate the transforms of damped vs undamped oscillations.</p>
+    </div>
+
+    <h2>Convolution Theorem</h2>
+
+    <div class="formula">
+        Z{x[n] * y[n]} = X(z) · Y(z)
+    </div>
+
+    <div class="explanation">
+        <h4>The killer property</h4>
+        <p>Convolution in the time domain — the operation that defines how LTI systems respond to inputs — becomes plain multiplication in the z-domain. This single property justifies the entire framework:</p>
+        <ul>
+            <li>To find a system's output: multiply input Z-transform by system transfer function</li>
+            <li>To cascade two systems: multiply their transfer functions</li>
+            <li>To deconvolve: divide in the z-domain</li>
+        </ul>
+        <p>The ROC of the product contains at least the intersection of the individual ROCs.</p>
+    </div>
+
+    <div class="analogy">Convolution is like passing mail through a chain of post offices, each adding its own delay and sorting. In the time domain, you'd need to track every letter through every office. The Z-transform is like having a master routing table — you just multiply the tables together to get the combined effect. One multiplication replaces an infinite nested loop.</div>
+
+    <h2>Differentiation in z</h2>
+
+    <div class="formula">
+        Z{n · x[n]} = −z · dX(z)/dz
+    </div>
+
+    <div class="explanation">
+        <h4>Multiplying by n in time</h4>
+        <p>If you want the Z-transform of n·x[n] (your sequence multiplied by its index), you differentiate X(z) and multiply by −z. This is useful for finding transforms of ramp-like sequences and for computing moments of a signal.</p>
+        <p>Repeated application gives higher moments: Z{n²·x[n]} involves the second derivative of X(z).</p>
+    </div>
+
+    <h2>Accumulation (Running Sum)</h2>
+
+    <div class="formula">
+        Z{Σ<sub>k=−∞</sub><sup>n</sup> x[k]} = X(z) / (1 − z⁻¹) = z·X(z) / (z − 1)
+    </div>
+
+    <div class="explanation">
+        <h4>Summation introduces a pole at z = 1</h4>
+        <p>The running sum of a sequence — the discrete equivalent of integration — divides by (1 − z⁻¹). This adds a pole at z = 1. Just as continuous integration adds a pole at s = 0, discrete accumulation adds a pole at z = 1 (since z = 1 corresponds to s = 0 through z = e<sup>sT</sup>).</p>
+    </div>
+
+    <h2>Initial Value Theorem</h2>
+
+    <div class="formula">
+        x[0] = lim<sub>z→∞</sub> X(z)
+    </div>
+
+    <div class="explanation">
+        <h4>Read the first sample from X(z)</h4>
+        <p>For causal sequences, you can recover x[0] without inverting the entire transform — just evaluate the limit as z approaches infinity. All the z⁻¹, z⁻², ... terms vanish, leaving only x[0].</p>
+    </div>
+
+    <h2>Final Value Theorem</h2>
+
+    <div class="formula">
+        lim<sub>n→∞</sub> x[n] = lim<sub>z→1</sub> (1 − z⁻¹)·X(z)
+    </div>
+
+    <div class="explanation">
+        <h4>Read the steady state from X(z)</h4>
+        <p>If x[n] converges to a finite limit, you can find that limit without inverting the transform. Multiply X(z) by (1 − z⁻¹) and evaluate at z = 1. This only works if (z−1)·X(z) has no poles on or outside the unit circle — i.e., the system actually reaches a steady state.</p>
+        <p><strong>Caution:</strong> If the system is unstable or oscillatory, this theorem gives garbage. Always verify the pole condition first.</p>
+    </div>
+
+    <h2>Parseval's Theorem</h2>
+
+    <div class="formula">
+        Σ<sub>n=−∞</sub><sup>∞</sup> |x[n]|² = (1/2πj) ∮ X(z)·X(1/z*) · z⁻¹ dz
+    </div>
+
+    <div class="explanation">
+        <h4>Energy conservation between domains</h4>
+        <p>The total energy of a sequence (sum of squared magnitudes) can be computed either in the time domain or by integrating around the unit circle in the z-domain. This is the discrete version of Parseval's theorem for Fourier transforms, and it guarantees that the Z-transform preserves signal energy information.</p>
+    </div>
+
+    <h2>Summary Table</h2>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Property</th>
+                <th>Time Domain</th>
+                <th>Z-Domain</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>Linearity</td><td><code>a·x[n] + b·y[n]</code></td><td><code>a·X(z) + b·Y(z)</code></td></tr>
+            <tr><td>Time shift</td><td><code>x[n−k]</code></td><td><code>z⁻ᵏ·X(z)</code></td></tr>
+            <tr><td>Time reversal</td><td><code>x[−n]</code></td><td><code>X(1/z)</code></td></tr>
+            <tr><td>Scaling</td><td><code>aⁿ·x[n]</code></td><td><code>X(z/a)</code></td></tr>
+            <tr><td>Convolution</td><td><code>x[n]*y[n]</code></td><td><code>X(z)·Y(z)</code></td></tr>
+            <tr><td>Differentiation</td><td><code>n·x[n]</code></td><td><code>−z·dX/dz</code></td></tr>
+            <tr><td>Accumulation</td><td><code>Σx[k]</code></td><td><code>X(z)/(1−z⁻¹)</code></td></tr>
+            <tr><td>Initial value</td><td><code>x[0]</code></td><td><code>lim X(z) as z→∞</code></td></tr>
+            <tr><td>Final value</td><td><code>x[∞]</code></td><td><code>lim (1−z⁻¹)X(z) as z→1</code></td></tr>
+        </tbody>
+    </table>
+
+    <div class="question-box">
+        <h4>Open Questions</h4>
+        <ul>
+            <li>Are there useful Z-transform properties for non-LTI systems (time-varying or nonlinear)?</li>
+            <li>Can property tables be extended meaningfully to multidimensional Z-transforms (2D, 3D)?</li>
+            <li>What is the natural "convolution theorem" for graph-based signals (graph Z-transform)?</li>
+        </ul>
+    </div>
+
+    <div class="speculation-box">
+        <h4>Properties as design rules</h4>
+        <p>Each property isn't just a mathematical fact — it's a design lever. Time shifting tells you that delay is cheap (just multiply by z⁻¹). Convolution-becomes-multiplication tells you that cascading filters is as easy as polynomial multiplication. Accumulation-adds-a-pole tells you that integral controllers will introduce a pole at z = 1, which sits right on the stability boundary. These properties form the grammar of a design language: you don't just analyse systems with them — you architect them.</p>
+        <p class="caveat">This "design language" interpretation is widely taught but not universally accepted as the best pedagogical framing. Some authors prefer a pure mathematical treatment without the engineering interpretation.</p>
+    </div>
+
+    <div class="page-nav">
+        <a href="definition.html" class="prev">← Definition</a>
+        <a href="common-pairs.html" class="next">Common Pairs →</a>
+    </div>
+
+</main>
+
+<footer class="footer">
+    The Z-Transform Knowledge Base
+</footer>
+
+</body>
+</html>

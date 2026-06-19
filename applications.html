@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Applications — The Z-Transform</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="nav">
+    <a href="index.html">Home</a>
+    <a href="definition.html">Definition</a>
+    <a href="properties.html">Properties</a>
+    <a href="common-pairs.html">Pairs</a>
+    <a href="roc.html">ROC</a>
+    <a href="inverse.html">Inverse</a>
+    <a href="transfer-functions.html">Transfer Fn</a>
+    <a href="stability.html">Stability</a>
+    <a href="filters.html">Filters</a>
+    <a href="applications.html" class="active">Applications</a>
+    <a href="animations.html">Interactive</a>
+</nav>
+
+<header class="hero">
+    <h1>Applications</h1>
+    <p class="subtitle">Where the Z-transform works in the real world — from your earbuds to spacecraft</p>
+</header>
+
+<main class="content">
+
+    <div class="stat-strip">
+        <div class="stat-card">
+            <span class="number">10⁹+</span>
+            <span class="label">Filters running now</span>
+        </div>
+        <div class="stat-card">
+            <span class="number">48kHz</span>
+            <span class="label">Audio sample rate</span>
+        </div>
+        <div class="stat-card">
+            <span class="number">1ms</span>
+            <span class="label">Control loop period</span>
+        </div>
+    </div>
+
+    <h2>Digital Audio</h2>
+
+    <div class="explanation">
+        <h4>Every sound you hear digitally has been Z-transformed</h4>
+        <p>Audio processing is the most pervasive application of Z-transform theory. When you:</p>
+        <ul>
+            <li>Listen through noise-cancelling headphones — the ANC system uses IIR filters designed via pole-zero placement</li>
+            <li>Make a phone call — echo cancellation uses adaptive FIR filters (LMS algorithm), designed and analysed in the z-domain</li>
+            <li>Use an equalizer — each band is a second-order IIR filter (biquad) with poles/zeros determining center frequency and bandwidth</li>
+            <li>Hear reverb in a recording — delay lines (z⁻ᴺ) and feedback networks (IIR structures) simulate room acoustics</li>
+        </ul>
+        <p>A typical audio processing chain might use 50-200 biquad sections running at 48kHz — each one a second-order transfer function whose stability depends on all poles being inside the unit circle.</p>
+    </div>
+
+    <div class="analogy">Your phone's audio codec performs roughly 5 million Z-transform-designed multiply-accumulate operations per second — just to handle one voice call. That's like a factory with 5 million workers, each performing one step of a partial fraction expansion every second, producing crystal-clear audio at the end of the line.</div>
+
+    <h2>Control Systems</h2>
+
+    <div class="explanation">
+        <h4>Discrete-time controllers</h4>
+        <p>Modern control systems are almost exclusively digital — a microcontroller samples sensors, computes a control law, and outputs actuator commands at a fixed rate. The Z-transform is the native language for designing these systems:</p>
+        <ul>
+            <li><strong>PID controllers:</strong> The classic PID in discrete time has transfer function
+                <code>C(z) = Kp + Ki·Tz/(z−1) + Kd·(z−1)/(Tz)</code>
+                with a pole at z = 1 (integral action) providing zero steady-state error</li>
+            <li><strong>Drone flight control:</strong> Each axis (roll, pitch, yaw) has a cascade of inner rate loop and outer angle loop, each designed for specific pole locations ensuring stability margins</li>
+            <li><strong>Motor control:</strong> Field-oriented control of electric motors uses discrete-time observers (Kalman filters) whose stability and convergence depend on eigenvalue (pole) placement</li>
+            <li><strong>Automotive ABS:</strong> Anti-lock braking samples wheel speed at ~100Hz and must respond within one sample period — the controller's transfer function is designed for minimal phase lag</li>
+        </ul>
+    </div>
+
+    <h3>Discretisation Methods</h3>
+
+    <div class="explanation">
+        <p>Converting continuous controllers to discrete ones is a Z-transform problem. Common methods:</p>
+    </div>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Method</th>
+                <th>Mapping</th>
+                <th>Properties</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>ZOH (zero-order hold)</td><td><code>exact for step inputs</code></td><td>Models actual DAC behaviour, preserves DC gain</td></tr>
+            <tr><td>Tustin (bilinear)</td><td><code>s = (2/T)(z−1)/(z+1)</code></td><td>Preserves stability, warps frequencies</td></tr>
+            <tr><td>Forward Euler</td><td><code>s = (z−1)/T</code></td><td>Simple but can destabilise</td></tr>
+            <tr><td>Backward Euler</td><td><code>s = (z−1)/(Tz)</code></td><td>Always stable if analog is stable, adds damping</td></tr>
+            <tr><td>Matched z-transform</td><td><code>poles/zeros mapped individually</code></td><td>Preserves pole/zero locations exactly</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Communications</h2>
+
+    <div class="explanation">
+        <h4>Channel modelling and equalisation</h4>
+        <p>Communication channels (wireless, fiber, DSL) are modelled as FIR filters — the impulse response of the channel (multipath, dispersion) is the set of FIR coefficients. The Z-transform provides:</p>
+        <ul>
+            <li><strong>Channel characterisation:</strong> H(z) = h₀ + h₁z⁻¹ + ... + hₗz⁻ᴸ where L is the channel memory (delay spread)</li>
+            <li><strong>Equalisation:</strong> Find W(z) such that W(z)·H(z) ≈ z⁻ᵈ (delay only, no distortion)</li>
+            <li><strong>OFDM:</strong> The DFT/IDFT pair (a sampled Z-transform on the unit circle) converts between time and frequency domain subcarriers in WiFi and 5G</li>
+            <li><strong>Error correction:</strong> CRC and convolutional codes are described by generator polynomials in z⁻¹ — the math is literally polynomial arithmetic in the z-domain</li>
+        </ul>
+    </div>
+
+    <h2>Image Processing</h2>
+
+    <div class="explanation">
+        <h4>2D Z-transforms</h4>
+        <p>Images are 2D discrete signals. The 2D Z-transform extends naturally:</p>
+    </div>
+
+    <div class="formula">
+        X(z₁, z₂) = Σ<sub>m</sub> Σ<sub>n</sub> x[m,n] · z₁⁻ᵐ · z₂⁻ⁿ
+    </div>
+
+    <div class="explanation">
+        <p>Applications in image processing:</p>
+        <ul>
+            <li><strong>Edge detection:</strong> The Sobel operator is a separable 2D FIR filter</li>
+            <li><strong>Blur/sharpen:</strong> Gaussian blur is a 2D lowpass; unsharp mask subtracts a lowpass (creates a highpass)</li>
+            <li><strong>Compression:</strong> The DCT in JPEG is related to evaluating a 2D Z-transform at specific points</li>
+            <li><strong>Stability of 2D filters:</strong> Much harder than 1D — no simple "all poles inside a circle" criterion exists for 2D IIR filters</li>
+        </ul>
+    </div>
+
+    <h2>Financial Modelling</h2>
+
+    <div class="explanation">
+        <h4>Discrete-time financial systems</h4>
+        <p>Financial time series are naturally discrete (daily closes, quarterly earnings). Z-transform techniques appear in:</p>
+        <ul>
+            <li><strong>ARIMA models:</strong> The autoregressive part is an IIR filter; the moving average part is FIR. Model identification uses pole-zero analysis of the estimated transfer function.</li>
+            <li><strong>Present value:</strong> The present value of a cash flow stream is literally the Z-transform evaluated at z = 1+r where r is the discount rate</li>
+            <li><strong>Risk filtering:</strong> Exponentially weighted moving averages (EWMA) for volatility estimation are first-order IIR filters with one pole</li>
+        </ul>
+    </div>
+
+    <div class="formula">
+        PV = Σ<sub>n=0</sub><sup>∞</sup> C[n] · (1+r)⁻ⁿ = Z{C[n]}|<sub>z=1+r</sub>
+    </div>
+
+    <div class="analogy">An economist computing net present value is unknowingly evaluating a Z-transform. The discount factor 1/(1+r) is z⁻¹ with z = 1+r. Asking "what's this cash flow worth today?" is the same question as "what's the Z-transform at this particular point?" — just in different clothes.</div>
+
+    <h2>Biomedical Engineering</h2>
+
+    <div class="explanation">
+        <h4>Biosignal processing</h4>
+        <ul>
+            <li><strong>ECG analysis:</strong> Baseline wander removal (highpass at 0.5 Hz), powerline interference rejection (notch at 50/60 Hz), QRS detection (bandpass 5-15 Hz) — all designed as digital filters in the z-domain</li>
+            <li><strong>EEG:</strong> Band-separation into alpha, beta, theta, delta rhythms using banks of IIR bandpass filters</li>
+            <li><strong>Hearing aids:</strong> Real-time multi-band compression using parallel filter banks, each a biquad section designed for specific audiological frequency bands</li>
+            <li><strong>Cochlear implants:</strong> Spectral decomposition into electrode channels uses FFT-based analysis (z-transform evaluated on the unit circle at N points)</li>
+        </ul>
+    </div>
+
+    <h2>Robotics and Embedded Systems</h2>
+
+    <div class="explanation">
+        <h4>Real-time constraints</h4>
+        <p>In embedded control, every multiplication costs clock cycles. The Z-transform framework determines the minimum-order filter or controller that meets specifications — critical when you have microseconds per sample:</p>
+        <ul>
+            <li><strong>Sensor fusion:</strong> Complementary filters for IMU data combine accelerometer (noisy, low-frequency accurate) with gyroscope (drifts, high-frequency accurate). A single-pole crossover filter suffices: H(z) = α/(1−(1−α)z⁻¹)</li>
+            <li><strong>Motor commutation:</strong> BLDC motor controllers compute current at 20-100 kHz, using first-order digital PI controllers</li>
+            <li><strong>Path planning:</strong> Trajectory smoothing uses moving-average (FIR) filters to ensure jerk-limited motion profiles</li>
+        </ul>
+    </div>
+
+    <h2>Radar and Sonar</h2>
+
+    <div class="explanation">
+        <h4>Matched filtering and pulse compression</h4>
+        <p>Radar signal processing is one of the original applications of discrete-time filtering:</p>
+        <ul>
+            <li><strong>Matched filter:</strong> The optimal detector for a known signal in noise is a filter whose impulse response is the time-reversed conjugate of the signal — easily designed via Z-transform (replace z with 1/z*)</li>
+            <li><strong>Moving Target Indicator (MTI):</strong> A simple FIR filter H(z) = 1 − z⁻¹ that cancels stationary clutter (a zero at z = 1 rejects DC)</li>
+            <li><strong>Doppler processing:</strong> Banks of narrowband filters (DFT) analyse velocity — the FFT is N evaluations of the Z-transform on the unit circle</li>
+        </ul>
+    </div>
+
+    <div class="question-box">
+        <h4>Open Questions</h4>
+        <ul>
+            <li>As sample rates push into GHz territory (5G, photonics), do classical filter structures remain computationally viable?</li>
+            <li>Can Z-transform analysis provide guarantees for learned controllers (neural network policies)?</li>
+            <li>How should Z-transform theory adapt for event-triggered (non-uniform) sampling in IoT systems?</li>
+        </ul>
+    </div>
+
+    <div class="speculation-box">
+        <h4>The Z-transform is infrastructure you don't see</h4>
+        <p>It's tempting to think the Z-transform is "just theory." But consider: every WiFi packet you receive was equalized by a Z-transform-designed filter. Every word Siri understands was preprocessed by mel-frequency cepstral coefficients computed via Z-transform machinery. Every photo your phone takes was denoised by a spatial filter whose design used 2D pole-zero analysis. The Z-transform is to digital signals what steel is to buildings — you rarely see it, but remove it and everything collapses. The billions of filters running right now across the world's devices represent perhaps the most successful transfer of pure mathematics into everyday engineering.</p>
+        <p class="caveat">This "invisible infrastructure" claim, while directionally correct, overstates the case. Many modern systems use techniques (deep learning, non-parametric methods) that bypass classical filter design. The proportion of signal processing that is "Z-transform-based" vs. "learned" is shifting, though classical methods remain dominant in real-time, safety-critical, and resource-constrained applications.</p>
+    </div>
+
+    <div class="page-nav">
+        <a href="filters.html" class="prev">← Filters</a>
+        <a href="animations.html" class="next">Interactive →</a>
+    </div>
+
+</main>
+
+<footer class="footer">
+    The Z-Transform Knowledge Base
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Filters — The Z-Transform</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="nav">
+    <a href="index.html">Home</a>
+    <a href="definition.html">Definition</a>
+    <a href="properties.html">Properties</a>
+    <a href="common-pairs.html">Pairs</a>
+    <a href="roc.html">ROC</a>
+    <a href="inverse.html">Inverse</a>
+    <a href="transfer-functions.html">Transfer Fn</a>
+    <a href="stability.html">Stability</a>
+    <a href="filters.html" class="active">Filters</a>
+    <a href="applications.html">Applications</a>
+    <a href="animations.html">Interactive</a>
+</nav>
+
+<header class="hero">
+    <h1>Digital Filters</h1>
+    <p class="subtitle">Designing systems that select, reject, and reshape frequency content — using poles and zeros</p>
+</header>
+
+<main class="content">
+
+    <div class="stat-strip">
+        <div class="stat-card">
+            <span class="number">FIR</span>
+            <span class="label">All-zero filters</span>
+        </div>
+        <div class="stat-card">
+            <span class="number">IIR</span>
+            <span class="label">Pole-zero filters</span>
+        </div>
+        <div class="stat-card">
+            <span class="number">4</span>
+            <span class="label">Classic types (LP/HP/BP/BS)</span>
+        </div>
+    </div>
+
+    <h2>FIR vs IIR</h2>
+
+    <div class="explanation">
+        <h4>Two fundamentally different architectures</h4>
+        <p>All digital filters fall into two categories based on their transfer function structure:</p>
+    </div>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Property</th>
+                <th>FIR (Finite Impulse Response)</th>
+                <th>IIR (Infinite Impulse Response)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>H(z) form</td><td><code>b₀ + b₁z⁻¹ + ... + bₘz⁻ᴹ</code></td><td><code>N(z)/D(z)</code> (has denominator)</td></tr>
+            <tr><td>Poles</td><td>Only at z = 0 (trivial)</td><td>Non-trivial pole locations</td></tr>
+            <tr><td>Impulse response</td><td>Finite (M+1 samples)</td><td>Infinite (decays but never ends)</td></tr>
+            <tr><td>Stability</td><td>Always stable</td><td>Must check pole locations</td></tr>
+            <tr><td>Linear phase</td><td>Easy (symmetric coefficients)</td><td>Impossible (for causal IIR)</td></tr>
+            <tr><td>Efficiency</td><td>Needs more coefficients for sharp cutoff</td><td>Sharp cutoff with few coefficients</td></tr>
+            <tr><td>Implementation</td><td>No feedback, only feedforward</td><td>Requires feedback (recursive)</td></tr>
+        </tbody>
+    </table>
+
+    <div class="analogy">An FIR filter is like a committee vote: it looks at the last M+1 input samples, weights them, and announces a verdict. Once those samples pass, they're forgotten. An IIR filter is like institutional memory: past inputs echo through the system forever (though fading). The committee (FIR) is guaranteed to terminate its deliberation; the institution (IIR) might become unstable (runaway feedback) if poorly governed.</div>
+
+    <h2>FIR Filter Design</h2>
+
+    <h3>Window Method</h3>
+
+    <div class="explanation">
+        <h4>The idea</h4>
+        <p>Start with the ideal (infinite-length) impulse response for your desired frequency response, then truncate it to M+1 samples using a window function:</p>
+        <ol>
+            <li>Specify desired frequency response H<sub>d</sub>(e<sup>jω</sup>)</li>
+            <li>Compute ideal impulse response: h<sub>d</sub>[n] = IDTFT{H<sub>d</sub>}</li>
+            <li>Multiply by a window: h[n] = h<sub>d</sub>[n] · w[n]</li>
+        </ol>
+        <p>Common windows and their properties:</p>
+    </div>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Window</th>
+                <th>Sidelobe (dB)</th>
+                <th>Transition Width</th>
+                <th>Use Case</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>Rectangular</td><td>−13</td><td>4π/M</td><td>Narrowest transition, worst ripple</td></tr>
+            <tr><td>Hamming</td><td>−41</td><td>8π/M</td><td>Good general purpose</td></tr>
+            <tr><td>Hanning</td><td>−31</td><td>8π/M</td><td>Spectral analysis</td></tr>
+            <tr><td>Blackman</td><td>−57</td><td>12π/M</td><td>Low sidelobe requirement</td></tr>
+            <tr><td>Kaiser</td><td>Adjustable</td><td>Adjustable</td><td>Flexible design parameter β</td></tr>
+        </tbody>
+    </table>
+
+    <h3>Parks-McClellan (Equiripple) Method</h3>
+
+    <div class="explanation">
+        <h4>Optimal in the minimax sense</h4>
+        <p>The Parks-McClellan algorithm finds the FIR filter of a given length that minimises the maximum deviation from the desired response (equiripple design). It uses the Remez exchange algorithm to iteratively find the optimal coefficients.</p>
+        <p>Advantages over windowing:</p>
+        <ul>
+            <li>Optimal use of available filter order (sharpest transition for given length)</li>
+            <li>Separately specified passband and stopband ripple</li>
+            <li>Exact control over transition bandwidth</li>
+        </ul>
+    </div>
+
+    <h3>Linear Phase FIR</h3>
+
+    <div class="explanation">
+        <h4>Symmetric coefficients → constant group delay</h4>
+        <p>If h[n] = h[M−n] (symmetric) or h[n] = −h[M−n] (antisymmetric), the filter has exactly linear phase. This means:</p>
+        <ul>
+            <li>All frequency components are delayed by the same amount (M/2 samples)</li>
+            <li>No phase distortion — the signal shape is preserved, only delayed</li>
+            <li>Critical for applications where waveform shape matters (audio, data communications)</li>
+        </ul>
+        <p>In the z-domain, linear phase means zeros come in reciprocal pairs: if z₀ is a zero, so is 1/z₀*. Zeros on the unit circle are their own reciprocals.</p>
+    </div>
+
+    <h2>IIR Filter Design</h2>
+
+    <h3>Bilinear Transform Method</h3>
+
+    <div class="explanation">
+        <h4>Converting analog prototypes to digital</h4>
+        <p>The most common IIR design approach: start with a well-known analog filter (Butterworth, Chebyshev, elliptic) and convert it to digital using the bilinear transform:</p>
+    </div>
+
+    <div class="formula">
+        s = (2/T) · (1 − z⁻¹) / (1 + z⁻¹)
+    </div>
+
+    <div class="explanation">
+        <p>This maps the entire s-plane left half (stable analog) to the z-plane unit circle interior (stable digital). The mapping is:</p>
+        <ul>
+            <li>s = jΩ → z = e<sup>jω</sup> where ω = 2·arctan(ΩT/2) — frequency warping</li>
+            <li>Left half-plane → inside unit circle (stability preserved)</li>
+            <li>Right half-plane → outside unit circle</li>
+            <li>jω axis → unit circle</li>
+        </ul>
+        <p>The price: frequency warping. Analog frequency Ω maps nonlinearly to digital frequency ω. Pre-warp critical frequencies before design to compensate.</p>
+    </div>
+
+    <h3>Classic IIR Prototypes</h3>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Passband</th>
+                <th>Stopband</th>
+                <th>Transition</th>
+                <th>Trade-off</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>Butterworth</td><td>Maximally flat</td><td>Monotone</td><td>Gradual</td><td>Smoothest response, widest transition</td></tr>
+            <tr><td>Chebyshev I</td><td>Equiripple</td><td>Monotone</td><td>Sharper</td><td>Allows passband ripple for sharper cutoff</td></tr>
+            <tr><td>Chebyshev II</td><td>Monotone</td><td>Equiripple</td><td>Sharper</td><td>Allows stopband ripple, flat passband</td></tr>
+            <tr><td>Elliptic (Cauer)</td><td>Equiripple</td><td>Equiripple</td><td>Sharpest</td><td>Minimum order for given specs, ripple both bands</td></tr>
+        </tbody>
+    </table>
+
+    <div class="analogy">Choosing a filter type is like choosing a knife. Butterworth is a chef's knife — smooth, versatile, no surprises. Chebyshev is a serrated knife — sharper at the cut but leaves a slightly ragged edge (ripple). Elliptic is a scalpel — the sharpest possible cut in the smallest space, but you need steady hands (tight tolerances on both sides).</div>
+
+    <h3>Pole Placement</h3>
+
+    <div class="explanation">
+        <h4>Direct design by positioning poles and zeros</h4>
+        <p>For simple filters, you can design directly by placing poles and zeros on the z-plane:</p>
+        <ul>
+            <li><strong>Notch filter:</strong> Place zeros on the unit circle at the frequency to reject. Place poles at the same angle but slightly inside (radius r < 1) to control bandwidth.</li>
+            <li><strong>Resonator:</strong> Place conjugate poles near the unit circle at the desired frequency. Closer to the circle → narrower resonance peak.</li>
+            <li><strong>Lowpass:</strong> Poles near z = 1 (low frequency emphasis), zeros near z = −1 (high frequency rejection).</li>
+            <li><strong>Allpass:</strong> For every pole at z = a, place a zero at z = 1/a*. This gives |H(e<sup>jω</sup>)| = 1 everywhere — only phase changes.</li>
+        </ul>
+    </div>
+
+    <h2>Implementation Structures</h2>
+
+    <div class="explanation">
+        <h4>Direct Form I</h4>
+        <p>Implements the difference equation directly. Uses M + N + 1 multiplications, M + N additions, and M + N delay elements. Simple but has poor numerical properties for high-order filters.</p>
+    </div>
+
+    <div class="explanation">
+        <h4>Direct Form II (Transposed)</h4>
+        <p>Mathematically equivalent but uses only max(M, N) delay elements — half the memory. Combines the feedback and feedforward paths through shared state.</p>
+    </div>
+
+    <div class="explanation">
+        <h4>Cascade of Second-Order Sections (SOS)</h4>
+        <p>Factor H(z) into a product of second-order sections (biquads):</p>
+    </div>
+
+    <div class="formula">
+        H(z) = Π<sub>k</sub> (b₀ₖ + b₁ₖz⁻¹ + b₂ₖz⁻²) / (1 + a₁ₖz⁻¹ + a₂ₖz⁻²)
+    </div>
+
+    <div class="explanation">
+        <p>This is the <strong>preferred implementation</strong> for virtually all practical IIR filters because:</p>
+        <ul>
+            <li>Each section's poles stay well within the stability triangle</li>
+            <li>Coefficient quantisation affects each section independently</li>
+            <li>Overflow in one section doesn't corrupt the entire filter</li>
+            <li>Easy to verify stability section by section</li>
+        </ul>
+    </div>
+
+    <h2>Design Specifications</h2>
+
+    <div class="explanation">
+        <h4>The four numbers that define a filter</h4>
+        <p>A lowpass filter design is typically specified by:</p>
+        <ul>
+            <li><strong>ωₚ:</strong> Passband edge frequency</li>
+            <li><strong>ωₛ:</strong> Stopband edge frequency (ωₛ > ωₚ for lowpass)</li>
+            <li><strong>δₚ:</strong> Maximum passband deviation (ripple)</li>
+            <li><strong>δₛ:</strong> Maximum stopband deviation (attenuation)</li>
+        </ul>
+        <p>The filter order (number of coefficients) is determined by how demanding these specs are. Tighter transition band (ωₛ − ωₚ small) or deeper attenuation (δₛ small) → higher order needed.</p>
+    </div>
+
+    <div class="question-box">
+        <h4>Open Questions</h4>
+        <ul>
+            <li>Can neural networks learn filter structures that outperform classical designs for non-stationary signals?</li>
+            <li>What is the fundamental lower bound on filter order for a given specification set?</li>
+            <li>How should filter design change for signals with non-uniform sampling?</li>
+        </ul>
+    </div>
+
+    <div class="speculation-box">
+        <h4>The filter as a musical instrument</h4>
+        <p>Audio engineers have long known that the "character" of a filter — what makes a Moog lowpass sound different from a state-variable filter with identical specifications — comes from subtle nonlinearities and the exact pole placement under modulation. The Z-transform gives us the linear skeleton, but the soul of a filter lives in how its poles move when parameters change in real time. Perhaps future filter design tools will optimise not just the static frequency response but the dynamic trajectory of poles under modulation — designing filters that "sing" rather than merely "filter."</p>
+        <p class="caveat">This perspective reflects audio/music engineering practice rather than mainstream DSP theory. Formal frameworks for dynamic pole-zero design under modulation are limited to specific cases (time-varying filters, linear parameter-varying systems).</p>
+    </div>
+
+    <div class="page-nav">
+        <a href="stability.html" class="prev">← Stability</a>
+        <a href="applications.html" class="next">Applications →</a>
+    </div>
+
+</main>
+
+<footer class="footer">
+    The Z-Transform Knowledge Base
+</footer>
+
+</body>
+</html>

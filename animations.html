@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Animations — The Z-Transform</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="nav">
+    <a href="index.html">Home</a>
+    <a href="definition.html">Definition</a>
+    <a href="properties.html">Properties</a>
+    <a href="common-pairs.html">Pairs</a>
+    <a href="roc.html">ROC</a>
+    <a href="inverse.html">Inverse</a>
+    <a href="transfer-functions.html">Transfer Fn</a>
+    <a href="stability.html">Stability</a>
+    <a href="filters.html">Filters</a>
+    <a href="applications.html">Applications</a>
+    <a href="animations.html" class="active">Interactive</a>
+</nav>
+
+<header class="hero">
+    <h1>Interactive Animations</h1>
+    <p class="subtitle">Drag poles and zeros. Watch systems respond. Build intuition through play.</p>
+</header>
+
+<main class="content">
+
+    <!-- ==================== POLE-ZERO PLOT ==================== -->
+    <h2>1. Pole-Zero Explorer</h2>
+
+    <div class="canvas-container">
+        <canvas id="pz-canvas" width="600" height="600"></canvas>
+        <div class="canvas-controls">
+            <button id="pz-add-pole">Add Pole</button>
+            <button id="pz-add-zero">Add Zero</button>
+            <button id="pz-clear">Clear All</button>
+            <button id="pz-preset-lp">Preset: Lowpass</button>
+            <button id="pz-preset-notch">Preset: Notch</button>
+        </div>
+    </div>
+
+    <div class="explainer-grid">
+        <div>
+            <h4>What you're seeing</h4>
+            <p>The unit circle (gold ring) in the complex z-plane. Poles are marked × and zeros as ○. Click and drag them to move them around. The background colour shows |H(z)| — brighter means higher gain at that point in the z-plane.</p>
+        </div>
+        <div>
+            <h4>So what?</h4>
+            <p>The frequency response is what happens ON the unit circle. Drag a pole close to the circle and watch the gain spike at that angle (frequency). Drag a zero onto the circle and watch the gain drop to zero. This is how filter design works: sculpt the frequency response by positioning poles and zeros.</p>
+        </div>
+    </div>
+
+    <!-- ==================== FREQUENCY RESPONSE ==================== -->
+    <h2>2. Frequency Response</h2>
+
+    <div class="canvas-container">
+        <canvas id="freq-canvas" width="600" height="300"></canvas>
+        <div class="canvas-controls">
+            <label>Pole radius: <input type="range" id="freq-r" min="0" max="99" value="80"> <span id="freq-r-val">0.80</span></label>
+            <label>Pole angle: <input type="range" id="freq-theta" min="0" max="314" value="78"> <span id="freq-theta-val">π/4</span></label>
+        </div>
+    </div>
+
+    <div class="explainer-grid">
+        <div>
+            <h4>What you're seeing</h4>
+            <p>The magnitude response |H(e<sup>jω</sup>)| of a second-order system with conjugate poles at r·e<sup>±jθ</sup>. The horizontal axis is normalised frequency (0 to π). Adjust the pole radius (how close to the unit circle) and angle (which frequency resonates).</p>
+        </div>
+        <div>
+            <h4>So what?</h4>
+            <p>As radius approaches 1, the resonance peak gets narrower and taller — the system becomes more frequency-selective. At r = 1 exactly, the peak goes to infinity (instability). This is why highly resonant filters need high-precision coefficients: a tiny perturbation in r near the circle causes dramatic response changes.</p>
+        </div>
+    </div>
+
+    <!-- ==================== IMPULSE RESPONSE ==================== -->
+    <h2>3. Impulse Response Viewer</h2>
+
+    <div class="canvas-container">
+        <canvas id="imp-canvas" width="600" height="250"></canvas>
+        <div class="canvas-controls">
+            <label>Pole magnitude: <input type="range" id="imp-mag" min="0" max="120" value="70"> <span id="imp-mag-val">0.70</span></label>
+            <label>Pole angle: <input type="range" id="imp-angle" min="0" max="314" value="100"> <span id="imp-angle-val">π/3.14</span></label>
+            <button id="imp-step">Show Step Response</button>
+        </div>
+    </div>
+
+    <div class="explainer-grid">
+        <div>
+            <h4>What you're seeing</h4>
+            <p>The impulse response h[n] of a system with one conjugate pole pair. Each vertical bar is one sample. The envelope (dashed) shows the exponential decay rate r<sup>n</sup>. Change the angle to see oscillation frequency change; change the magnitude to see faster or slower decay.</p>
+        </div>
+        <div>
+            <h4>So what?</h4>
+            <p>The impulse response IS the system — it tells you everything about how it will react to any input (via convolution). A pole magnitude > 1 means the bars grow without bound (unstable). A pole at magnitude exactly 1 means they oscillate forever (marginally stable). Only magnitude < 1 gives a decaying, stable impulse response.</p>
+        </div>
+    </div>
+
+    <!-- ==================== Z-PLANE MAPPING ==================== -->
+    <h2>4. S-Plane to Z-Plane Mapping</h2>
+
+    <div class="canvas-container">
+        <canvas id="map-canvas" width="600" height="300"></canvas>
+        <div class="canvas-controls">
+            <label>Sampling period T: <input type="range" id="map-T" min="1" max="100" value="10"> <span id="map-T-val">0.10</span></label>
+            <button id="map-animate">Animate Mapping</button>
+        </div>
+    </div>
+
+    <div class="explainer-grid">
+        <div>
+            <h4>What you're seeing</h4>
+            <p>Left: the s-plane (continuous time). Right: the z-plane (discrete time). Points in the s-plane map to the z-plane via z = e<sup>sT</sup>. The left half-plane maps inside the unit circle; the jω axis maps to the unit circle; horizontal lines map to circles; vertical lines map to radial rays.</p>
+        </div>
+        <div>
+            <h4>So what?</h4>
+            <p>This is why sampling matters. The mapping wraps the infinite jω axis around the finite unit circle — meaning continuous frequencies above π/T get aliased back. The sampling period T controls how tightly frequencies wrap. This is the geometric reason behind the Nyquist theorem.</p>
+        </div>
+    </div>
+
+    <!-- ==================== CONVOLUTION ==================== -->
+    <h2>5. Convolution in Action</h2>
+
+    <div class="canvas-container">
+        <canvas id="conv-canvas" width="600" height="350"></canvas>
+        <div class="canvas-controls">
+            <label>Filter length: <input type="range" id="conv-len" min="2" max="20" value="5"> <span id="conv-len-val">5</span></label>
+            <button id="conv-impulse">Impulse Input</button>
+            <button id="conv-step">Step Input</button>
+            <button id="conv-sine">Sine Input</button>
+        </div>
+    </div>
+
+    <div class="explainer-grid">
+        <div>
+            <h4>What you're seeing</h4>
+            <p>Top row: input signal x[n]. Middle row: filter impulse response h[n] (a simple moving average of adjustable length). Bottom row: output y[n] = x[n] * h[n] (convolution). Watch how the filter smooths the input by averaging neighbouring samples.</p>
+        </div>
+        <div>
+            <h4>So what?</h4>
+            <p>This is what Y(z) = X(z)·H(z) looks like in the time domain. The multiplication in z is THIS sliding/summing operation in time. A longer filter (more z⁻¹ terms in H(z)) means more smoothing but also more delay. The trade-off between smoothing and delay is fundamental to all filter design.</p>
+        </div>
+    </div>
+
+    <div class="page-nav">
+        <a href="applications.html" class="prev">← Applications</a>
+        <a href="index.html" class="next">Home →</a>
+    </div>
+
+</main>
+
+<footer class="footer">
+    The Z-Transform Knowledge Base — Interactive Animations
+</footer>
+
+<script>
+// ===================== POLE-ZERO EXPLORER =====================
+(function() {
+    const canvas = document.getElementById('pz-canvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const cx = W/2, cy = H/2, scale = W/3;
+
+    let poles = [];
+    let zeros = [];
+    let dragging = null;
+
+    function toScreen(re, im) { return [cx + re*scale, cy - im*scale]; }
+    function toComplex(sx, sy) { return [(sx - cx)/scale, (cy - sy)/scale]; }
+
+    function computeH(zr, zi) {
+        let nr = 1, ni = 0;
+        for (let z of zeros) {
+            let dr = zr - z[0], di = zi - z[1];
+            let tr = nr*dr - ni*di, ti = nr*di + ni*dr;
+            nr = tr; ni = ti;
+        }
+        let ddr = 1, ddi = 0;
+        for (let p of poles) {
+            let dr = zr - p[0], di = zi - p[1];
+            let tr = ddr*dr - ddi*di, ti = ddr*di + ddi*dr;
+            ddr = tr; ddi = ti;
+        }
+        let denom = ddr*ddr + ddi*ddi;
+        if (denom < 1e-10) return 100;
+        let hr = (nr*ddr + ni*ddi)/denom;
+        let hi = (ni*ddr - nr*ddi)/denom;
+        return Math.sqrt(hr*hr + hi*hi);
+    }
+
+    function draw() {
+        ctx.fillStyle = '#0d0d14';
+        ctx.fillRect(0, 0, W, H);
+
+        // Draw magnitude heatmap (low res for performance)
+        const step = 6;
+        for (let sx = 0; sx < W; sx += step) {
+            for (let sy = 0; sy < H; sy += step) {
+                let [re, im] = toComplex(sx, sy);
+                let mag = computeH(re, im);
+                let brightness = Math.min(mag * 30, 255);
+                ctx.fillStyle = `rgba(106, 130, 251, ${brightness/255 * 0.3})`;
+                ctx.fillRect(sx, sy, step, step);
+            }
+        }
+
+        // Unit circle
+        ctx.beginPath();
+        ctx.arc(cx, cy, scale, 0, 2*Math.PI);
+        ctx.strokeStyle = '#f0c27f';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Axes
+        ctx.beginPath();
+        ctx.moveTo(0, cy); ctx.lineTo(W, cy);
+        ctx.moveTo(cx, 0); ctx.lineTo(cx, H);
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Axis labels
+        ctx.fillStyle = '#889';
+        ctx.font = '11px Menlo, monospace';
+        ctx.fillText('Re', W - 20, cy - 5);
+        ctx.fillText('Im', cx + 5, 15);
+        ctx.fillText('1', cx + scale - 5, cy + 15);
+        ctx.fillText('-1', cx - scale - 15, cy + 15);
+
+        // Draw zeros
+        ctx.strokeStyle = '#5a9';
+        ctx.lineWidth = 2.5;
+        for (let z of zeros) {
+            let [sx, sy] = toScreen(z[0], z[1]);
+            ctx.beginPath();
+            ctx.arc(sx, sy, 8, 0, 2*Math.PI);
+            ctx.stroke();
+        }
+
+        // Draw poles
+        ctx.strokeStyle = '#fc5c7d';
+        ctx.lineWidth = 2.5;
+        for (let p of poles) {
+            let [sx, sy] = toScreen(p[0], p[1]);
+            ctx.beginPath();
+            ctx.moveTo(sx-7, sy-7); ctx.lineTo(sx+7, sy+7);
+            ctx.moveTo(sx+7, sy-7); ctx.lineTo(sx-7, sy+7);
+            ctx.stroke();
+        }
+
+        // Stability indicator
+        let stable = poles.every(p => Math.sqrt(p[0]*p[0]+p[1]*p[1]) < 1);
+        ctx.fillStyle = stable ? '#5a9' : '#fc5c7d';
+        ctx.font = '13px Menlo, monospace';
+        ctx.fillText(stable ? 'STABLE' : 'UNSTABLE', 10, 20);
+    }
+
+    canvas.addEventListener('mousedown', function(e) {
+        let rect = canvas.getBoundingClientRect();
+        let mx = (e.clientX - rect.left) * (W / rect.width);
+        let my = (e.clientY - rect.top) * (H / rect.height);
+        let [re, im] = toComplex(mx, my);
+
+        // Check if clicking near existing pole/zero
+        for (let i = 0; i < poles.length; i++) {
+            let d = Math.hypot(re - poles[i][0], im - poles[i][1]);
+            if (d < 0.1) { dragging = {type: 'pole', idx: i}; return; }
+        }
+        for (let i = 0; i < zeros.length; i++) {
+            let d = Math.hypot(re - zeros[i][0], im - zeros[i][1]);
+            if (d < 0.1) { dragging = {type: 'zero', idx: i}; return; }
+        }
+    });
+
+    canvas.addEventListener('mousemove', function(e) {
+        if (!dragging) return;
+        let rect = canvas.getBoundingClientRect();
+        let mx = (e.clientX - rect.left) * (W / rect.width);
+        let my = (e.clientY - rect.top) * (H / rect.height);
+        let [re, im] = toComplex(mx, my);
+        if (dragging.type === 'pole') poles[dragging.idx] = [re, im];
+        else zeros[dragging.idx] = [re, im];
+        draw();
+    });
+
+    canvas.addEventListener('mouseup', function() { dragging = null; });
+    canvas.addEventListener('mouseleave', function() { dragging = null; });
+
+    document.getElementById('pz-add-pole').addEventListener('click', function() {
+        poles.push([0.5, 0.3]);
+        poles.push([0.5, -0.3]);
+        draw();
+    });
+
+    document.getElementById('pz-add-zero').addEventListener('click', function() {
+        zeros.push([-0.5, 0.3]);
+        zeros.push([-0.5, -0.3]);
+        draw();
+    });
+
+    document.getElementById('pz-clear').addEventListener('click', function() {
+        poles = []; zeros = []; draw();
+    });
+
+    document.getElementById('pz-preset-lp').addEventListener('click', function() {
+        poles = [[0.6, 0.3], [0.6, -0.3]];
+        zeros = [[-1, 0]];
+        draw();
+    });
+
+    document.getElementById('pz-preset-notch').addEventListener('click', function() {
+        let theta = Math.PI/4;
+        poles = [[0.9*Math.cos(theta), 0.9*Math.sin(theta)], [0.9*Math.cos(theta), -0.9*Math.sin(theta)]];
+        zeros = [[Math.cos(theta), Math.sin(theta)], [Math.cos(theta), -Math.sin(theta)]];
+        draw();
+    });
+
+    // Initial state
+    poles = [[0.7, 0.4], [0.7, -0.4]];
+    zeros = [[-0.8, 0]];
+    draw();
+})();
+
+// ===================== FREQUENCY RESPONSE =====================
+(function() {
+    const canvas = document.getElementById('freq-canvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+
+    const rSlider = document.getElementById('freq-r');
+    const thetaSlider = document.getElementById('freq-theta');
+    const rVal = document.getElementById('freq-r-val');
+    const thetaVal = document.getElementById('freq-theta-val');
+
+    function draw() {
+        let r = parseInt(rSlider.value) / 100;
+        let theta = parseInt(thetaSlider.value) / 100;
+        rVal.textContent = r.toFixed(2);
+        thetaVal.textContent = (theta / Math.PI).toFixed(2) + 'π';
+
+        ctx.fillStyle = '#0d0d14';
+        ctx.fillRect(0, 0, W, H);
+
+        // Grid
+        ctx.strokeStyle = '#1a1a2e';
+        ctx.lineWidth = 1;
+        for (let i = 1; i < 6; i++) {
+            let y = H - i * (H/6);
+            ctx.beginPath(); ctx.moveTo(40, y); ctx.lineTo(W-10, y); ctx.stroke();
+        }
+
+        // Compute frequency response
+        let points = [];
+        let maxMag = 0;
+        for (let i = 0; i <= 200; i++) {
+            let w = (i / 200) * Math.PI;
+            let cosw = Math.cos(w), sinw = Math.sin(w);
+            // H(z) = 1 / [(z - r*e^jtheta)(z - r*e^-jtheta)]
+            // = 1 / [z^2 - 2r*cos(theta)*z + r^2]
+            // evaluate at z = e^jw
+            let dr = Math.cos(w) - r*Math.cos(theta);
+            let di = Math.sin(w) - r*Math.sin(theta);
+            let d1 = Math.sqrt(dr*dr + di*di);
+            let dr2 = Math.cos(w) - r*Math.cos(-theta);
+            let di2 = Math.sin(w) - r*Math.sin(-theta);
+            let d2 = Math.sqrt(dr2*dr2 + di2*di2);
+            let mag = 1 / (d1 * d2);
+            points.push(mag);
+            if (mag > maxMag) maxMag = mag;
+        }
+
+        // Normalize and draw
+        let plotH = H - 40;
+        let plotW = W - 50;
+        ctx.beginPath();
+        ctx.strokeStyle = '#f0c27f';
+        ctx.lineWidth = 2;
+        for (let i = 0; i <= 200; i++) {
+            let x = 40 + (i/200) * plotW;
+            let y = H - 20 - (points[i]/maxMag) * plotH * 0.9;
+            if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        // Axes labels
+        ctx.fillStyle = '#889';
+        ctx.font = '11px Menlo, monospace';
+        ctx.fillText('0', 40, H - 5);
+        ctx.fillText('π/4', 40 + plotW*0.25, H - 5);
+        ctx.fillText('π/2', 40 + plotW*0.5, H - 5);
+        ctx.fillText('3π/4', 40 + plotW*0.75, H - 5);
+        ctx.fillText('π', 40 + plotW, H - 5);
+        ctx.fillText('|H(e^jω)|', 5, 15);
+        ctx.fillText('ω', W - 15, H - 5);
+
+        // Mark resonant frequency
+        ctx.strokeStyle = '#fc5c7d44';
+        ctx.lineWidth = 1;
+        let resonantX = 40 + (theta/Math.PI) * plotW;
+        ctx.beginPath(); ctx.moveTo(resonantX, 20); ctx.lineTo(resonantX, H-20); ctx.stroke();
+        ctx.fillStyle = '#fc5c7d';
+        ctx.fillText('ω₀=' + (theta/Math.PI).toFixed(2) + 'π', resonantX + 3, 30);
+    }
+
+    rSlider.addEventListener('input', draw);
+    thetaSlider.addEventListener('input', draw);
+    draw();
+})();
+
+// ===================== IMPULSE RESPONSE =====================
+(function() {
+    const canvas = document.getElementById('imp-canvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+
+    const magSlider = document.getElementById('imp-mag');
+    const angleSlider = document.getElementById('imp-angle');
+    const magVal = document.getElementById('imp-mag-val');
+    const angleVal = document.getElementById('imp-angle-val');
+    let showStep = false;
+
+    document.getElementById('imp-step').addEventListener('click', function() {
+        showStep = !showStep;
+        this.textContent = showStep ? 'Show Impulse Response' : 'Show Step Response';
+        draw();
+    });
+
+    function draw() {
+        let r = parseInt(magSlider.value) / 100;
+        let theta = parseInt(angleSlider.value) / 100;
+        magVal.textContent = r.toFixed(2);
+        angleVal.textContent = (theta/Math.PI).toFixed(2) + 'π';
+
+        ctx.fillStyle = '#0d0d14';
+        ctx.fillRect(0, 0, W, H);
+
+        let N = 40;
+        let samples = [];
+        let maxAbs = 0;
+
+        for (let n = 0; n < N; n++) {
+            let h;
+            if (showStep) {
+                // Step response = running sum of impulse response
+                h = 0;
+                for (let k = 0; k <= n; k++) {
+                    h += Math.pow(r, k) * Math.cos(theta * k);
+                }
+            } else {
+                h = Math.pow(r, n) * Math.cos(theta * n);
+            }
+            samples.push(h);
+            if (Math.abs(h) > maxAbs) maxAbs = Math.abs(h);
+        }
+        if (maxAbs < 0.01) maxAbs = 1;
+
+        let plotH = H - 50;
+        let baseline = H/2;
+        let barW = (W - 60) / N;
+
+        // Grid
+        ctx.strokeStyle = '#1a1a2e';
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(40, baseline); ctx.lineTo(W-10, baseline); ctx.stroke();
+
+        // Envelope (for impulse only)
+        if (!showStep) {
+            ctx.strokeStyle = '#f0c27f33';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            for (let n = 0; n < N; n++) {
+                let env = Math.pow(r, n);
+                let y = baseline - (env/maxAbs) * (plotH/2) * 0.85;
+                let x = 50 + n * barW + barW/2;
+                if (n === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+            ctx.beginPath();
+            for (let n = 0; n < N; n++) {
+                let env = -Math.pow(r, n);
+                let y = baseline - (env/maxAbs) * (plotH/2) * 0.85;
+                let x = 50 + n * barW + barW/2;
+                if (n === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        // Bars
+        for (let n = 0; n < N; n++) {
+            let val = samples[n] / maxAbs;
+            let barH = val * (plotH/2) * 0.85;
+            let x = 50 + n * barW;
+            let color = val >= 0 ? '#6a82fb' : '#fc5c7d';
+            ctx.fillStyle = color;
+            ctx.fillRect(x + 1, baseline - Math.max(barH, 0), barW - 2, Math.abs(barH));
+        }
+
+        // Labels
+        ctx.fillStyle = '#889';
+        ctx.font = '11px Menlo, monospace';
+        ctx.fillText('n', W - 15, baseline + 15);
+        ctx.fillText(showStep ? 's[n]' : 'h[n]', 5, 15);
+        ctx.fillText('0', 50, baseline + 15);
+
+        // Stability indicator
+        let stable = r < 1;
+        ctx.fillStyle = stable ? '#5a9' : '#fc5c7d';
+        ctx.font = '12px Menlo, monospace';
+        ctx.fillText(r >= 1 ? (r === 1 ? 'MARGINAL |p|=1' : 'UNSTABLE |p|>1') : 'STABLE |p|<1', W - 140, 20);
+    }
+
+    magSlider.addEventListener('input', draw);
+    angleSlider.addEventListener('input', draw);
+    draw();
+})();
+
+// ===================== S-PLANE TO Z-PLANE MAPPING =====================
+(function() {
+    const canvas = document.getElementById('map-canvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const halfW = W/2;
+
+    const TSlider = document.getElementById('map-T');
+    const TVal = document.getElementById('map-T-val');
+    let animating = false;
+    let animPhase = 0;
+
+    function draw() {
+        let T = parseInt(TSlider.value) / 100;
+        TVal.textContent = T.toFixed(2);
+
+        ctx.fillStyle = '#0d0d14';
+        ctx.fillRect(0, 0, W, H);
+
+        // S-plane (left half)
+        let sW = halfW - 20, sH = H - 20;
+        let sCx = halfW/2, sCy = H/2;
+        let sScale = sH / 8;
+
+        // Left half plane shading
+        ctx.fillStyle = 'rgba(85, 170, 153, 0.05)';
+        ctx.fillRect(10, 10, sCx - 10, sH);
+
+        // S-plane axes
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(10, sCy); ctx.lineTo(halfW - 10, sCy);
+        ctx.moveTo(sCx, 10); ctx.lineTo(sCx, H - 10);
+        ctx.stroke();
+
+        // jw axis label
+        ctx.strokeStyle = '#f0c27f55';
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(sCx, 10); ctx.lineTo(sCx, H-10); ctx.stroke();
+
+        // Z-plane (right half)
+        let zCx = halfW + halfW/2, zCy = H/2;
+        let zScale = (H - 40) / 3;
+
+        // Unit circle
+        ctx.beginPath();
+        ctx.arc(zCx, zCy, zScale, 0, 2*Math.PI);
+        ctx.strokeStyle = '#f0c27f';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Inside unit circle shading
+        ctx.fillStyle = 'rgba(85, 170, 153, 0.05)';
+        ctx.beginPath();
+        ctx.arc(zCx, zCy, zScale, 0, 2*Math.PI);
+        ctx.fill();
+
+        // Z-plane axes
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(halfW + 10, zCy); ctx.lineTo(W - 10, zCy);
+        ctx.moveTo(zCx, 10); ctx.lineTo(zCx, H - 10);
+        ctx.stroke();
+
+        // Map some points
+        let points = [];
+        // Grid of s-plane points
+        for (let sigma = -3; sigma <= 1; sigma += 0.5) {
+            for (let omega = -3; omega <= 3; omega += 0.5) {
+                points.push([sigma, omega]);
+            }
+        }
+
+        // Add animated point
+        if (animating) {
+            let sigma = -1 + Math.sin(animPhase) * 2;
+            let omega = Math.cos(animPhase * 0.7) * 3;
+            points.push([sigma, omega]);
+        }
+
+        for (let [sigma, omega] of points) {
+            // s-plane position
+            let sx = sCx + sigma * sScale;
+            let sy = sCy - omega * sScale;
+
+            // z = e^(sT) = e^((sigma+jomega)*T)
+            let zMag = Math.exp(sigma * T);
+            let zAngle = omega * T;
+            let zx = zCx + zMag * Math.cos(zAngle) * zScale;
+            let zy = zCy - zMag * Math.sin(zAngle) * zScale;
+
+            if (sx > 10 && sx < halfW - 10 && sy > 10 && sy < H - 10) {
+                let isStable = sigma < 0;
+                ctx.fillStyle = isStable ? 'rgba(85, 170, 153, 0.7)' : 'rgba(252, 92, 125, 0.7)';
+                ctx.beginPath(); ctx.arc(sx, sy, 3, 0, 2*Math.PI); ctx.fill();
+            }
+
+            if (zx > halfW + 5 && zx < W - 5 && zy > 5 && zy < H - 5) {
+                let isStable = zMag < 1;
+                ctx.fillStyle = isStable ? 'rgba(85, 170, 153, 0.7)' : 'rgba(252, 92, 125, 0.7)';
+                ctx.beginPath(); ctx.arc(zx, zy, 3, 0, 2*Math.PI); ctx.fill();
+            }
+        }
+
+        // Labels
+        ctx.fillStyle = '#f0c27f';
+        ctx.font = '13px Menlo, monospace';
+        ctx.fillText('s-plane', 15, 20);
+        ctx.fillText('z-plane', halfW + 15, 20);
+        ctx.fillStyle = '#889';
+        ctx.font = '10px Menlo, monospace';
+        ctx.fillText('σ', halfW - 20, sCy - 5);
+        ctx.fillText('jω', sCx + 3, 20);
+        ctx.fillText('Re', W - 20, zCy - 5);
+        ctx.fillText('Im', zCx + 3, 20);
+        ctx.fillText('z = e^(sT)', halfW/2 - 20, H - 5);
+
+        // Divider
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath(); ctx.moveTo(halfW, 0); ctx.lineTo(halfW, H); ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Arrow
+        ctx.fillStyle = '#f0c27f';
+        ctx.font = '16px serif';
+        ctx.fillText('→', halfW - 8, H/2);
+    }
+
+    TSlider.addEventListener('input', draw);
+
+    document.getElementById('map-animate').addEventListener('click', function() {
+        animating = !animating;
+        this.textContent = animating ? 'Stop' : 'Animate Mapping';
+        if (animating) animate();
+    });
+
+    function animate() {
+        if (!animating) return;
+        animPhase += 0.03;
+        draw();
+        requestAnimationFrame(animate);
+    }
+
+    draw();
+})();
+
+// ===================== CONVOLUTION =====================
+(function() {
+    const canvas = document.getElementById('conv-canvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+
+    const lenSlider = document.getElementById('conv-len');
+    const lenVal = document.getElementById('conv-len-val');
+    let inputType = 'impulse';
+
+    document.getElementById('conv-impulse').addEventListener('click', function() { inputType = 'impulse'; draw(); });
+    document.getElementById('conv-step').addEventListener('click', function() { inputType = 'step'; draw(); });
+    document.getElementById('conv-sine').addEventListener('click', function() { inputType = 'sine'; draw(); });
+
+    function draw() {
+        let M = parseInt(lenSlider.value);
+        lenVal.textContent = M;
+
+        ctx.fillStyle = '#0d0d14';
+        ctx.fillRect(0, 0, W, H);
+
+        let N = 40;
+        let x = new Array(N).fill(0);
+        let h = new Array(N).fill(0);
+
+        // Generate input
+        if (inputType === 'impulse') {
+            x[5] = 1;
+        } else if (inputType === 'step') {
+            for (let i = 5; i < N; i++) x[i] = 1;
+        } else {
+            for (let i = 0; i < N; i++) x[i] = Math.sin(2*Math.PI*i/8);
+        }
+
+        // Filter (moving average)
+        for (let i = 0; i < M; i++) h[i] = 1/M;
+
+        // Convolve
+        let y = new Array(N).fill(0);
+        for (let n = 0; n < N; n++) {
+            for (let k = 0; k < M; k++) {
+                if (n - k >= 0) y[n] += h[k] * x[n-k];
+            }
+        }
+
+        let rowH = H / 3 - 10;
+        let barW = (W - 60) / N;
+
+        function drawRow(data, yOffset, label, color) {
+            let maxAbs = Math.max(...data.map(Math.abs), 0.01);
+            let baseline = yOffset + rowH/2;
+
+            // Baseline
+            ctx.strokeStyle = '#222';
+            ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(50, baseline); ctx.lineTo(W-10, baseline); ctx.stroke();
+
+            // Bars
+            ctx.fillStyle = color;
+            for (let i = 0; i < N; i++) {
+                let val = data[i] / maxAbs;
+                let barH = val * (rowH/2) * 0.8;
+                let bx = 50 + i * barW;
+                ctx.fillRect(bx + 1, baseline - Math.max(barH, 0), barW - 2, Math.abs(barH));
+            }
+
+            // Label
+            ctx.fillStyle = '#889';
+            ctx.font = '11px Menlo, monospace';
+            ctx.fillText(label, 5, yOffset + 15);
+        }
+
+        drawRow(x, 5, 'x[n]', '#6a82fb');
+        drawRow(h, rowH + 15, 'h[n]', '#5a9');
+        drawRow(y, 2*rowH + 25, 'y[n]=x*h', '#f0c27f');
+    }
+
+    lenSlider.addEventListener('input', draw);
+    draw();
+})();
+</script>
+
+</body>
+</html>

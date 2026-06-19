@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Z-Transform — A Visual Knowledge Base</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="nav">
+    <a href="index.html" class="active">Home</a>
+    <a href="definition.html">Definition</a>
+    <a href="properties.html">Properties</a>
+    <a href="common-pairs.html">Pairs</a>
+    <a href="roc.html">ROC</a>
+    <a href="inverse.html">Inverse</a>
+    <a href="transfer-functions.html">Transfer Fn</a>
+    <a href="stability.html">Stability</a>
+    <a href="filters.html">Filters</a>
+    <a href="applications.html">Applications</a>
+    <a href="animations.html">Interactive</a>
+</nav>
+
+<header class="hero">
+    <h1>The Z-Transform</h1>
+    <p class="subtitle">A visual, interactive guide to discrete-time signal analysis — from first principles to filter design</p>
+</header>
+
+<main class="content">
+
+    <div class="stat-strip">
+        <div class="stat-card">
+            <span class="number">X(z)</span>
+            <span class="label">The Transform</span>
+        </div>
+        <div class="stat-card">
+            <span class="number">1730</span>
+            <span class="label">Year of Origin</span>
+        </div>
+        <div class="stat-card">
+            <span class="number">∞</span>
+            <span class="label">Power Series</span>
+        </div>
+        <div class="stat-card">
+            <span class="number">|z|</span>
+            <span class="label">Region of Convergence</span>
+        </div>
+    </div>
+
+    <div class="explanation">
+        <h4>What is the Z-Transform?</h4>
+        <p>The Z-transform converts a discrete-time signal — a sequence of numbers — into a function of a complex variable <code>z</code>. It is the discrete-time counterpart of the Laplace transform, and the foundation of digital signal processing, control systems, and nearly all modern computation on sampled data.</p>
+        <p>This knowledge base takes you from the definition through to practical filter design, with interactive visualizations at every step.</p>
+    </div>
+
+    <div class="analogy">Think of the Z-transform as a prism for sequences: just as a glass prism splits white light into its constituent frequencies, the Z-transform decomposes a time-domain sequence into exponential components indexed by the complex variable z. Each point in the z-plane tells you the "weight" of a particular complex exponential in your signal.</div>
+
+    <h2>Explore the Topics</h2>
+
+    <div class="card-grid">
+        <a href="definition.html" class="card">
+            <div class="card-number">01</div>
+            <h3>Definition</h3>
+            <p>The forward and inverse Z-transform. Bilateral vs unilateral forms. Why z is complex.</p>
+        </a>
+        <a href="properties.html" class="card">
+            <div class="card-number">02</div>
+            <h3>Properties</h3>
+            <p>Linearity, time shifting, convolution theorem, differentiation in z, initial and final value theorems.</p>
+        </a>
+        <a href="common-pairs.html" class="card">
+            <div class="card-number">03</div>
+            <h3>Common Pairs</h3>
+            <p>The essential lookup table — unit impulse, step, exponential, sinusoidal, and geometric sequences.</p>
+        </a>
+        <a href="roc.html" class="card">
+            <div class="card-number">04</div>
+            <h3>Region of Convergence</h3>
+            <p>Why the same X(z) can represent different sequences. Convergence, annular regions, and causality.</p>
+        </a>
+        <a href="inverse.html" class="card">
+            <div class="card-number">05</div>
+            <h3>Inverse Z-Transform</h3>
+            <p>Partial fractions, power series expansion, and contour integration — three paths back to time domain.</p>
+        </a>
+        <a href="transfer-functions.html" class="card">
+            <div class="card-number">06</div>
+            <h3>Transfer Functions</h3>
+            <p>Poles, zeros, and the complete characterisation of LTI systems. From difference equations to H(z).</p>
+        </a>
+        <a href="stability.html" class="card">
+            <div class="card-number">07</div>
+            <h3>Stability</h3>
+            <p>BIBO stability, the unit circle criterion, Jury stability test, and Schur-Cohn conditions.</p>
+        </a>
+        <a href="filters.html" class="card">
+            <div class="card-number">08</div>
+            <h3>Digital Filters</h3>
+            <p>FIR and IIR filter design using poles and zeros. Butterworth, Chebyshev, and windowing methods.</p>
+        </a>
+        <a href="applications.html" class="card">
+            <div class="card-number">09</div>
+            <h3>Applications</h3>
+            <p>Control systems, audio processing, communications, image processing, and financial modelling.</p>
+        </a>
+        <a href="animations.html" class="card">
+            <div class="card-number">10</div>
+            <h3>Interactive Animations</h3>
+            <p>Drag poles and zeros. Watch frequency responses change in real time. Build intuition through play.</p>
+        </a>
+    </div>
+
+    <div class="speculation-box">
+        <h4>Why study the Z-transform in 2026?</h4>
+        <p>With neural networks dominating signal processing research, one might ask whether classical Z-transform theory still matters. It does — profoundly. Every IIR filter in your audio codec, every control loop in a quadcopter, every echo cancellation algorithm in a video call relies on pole-zero analysis. Neural networks can learn filters, but understanding <em>why</em> a filter works — whether it's stable, what its frequency response is, where its energy concentrates — requires the Z-transform.</p>
+        <p>Moreover, the Z-transform provides the mathematical language for designing interpretable, efficient, guaranteed-stable systems. When failure means a drone crash or a pacemaker malfunction, you want provable stability — not statistical confidence.</p>
+        <p class="caveat">This is the author's perspective. The field is actively debating the balance between learned and designed systems, and the optimal point likely depends on the application's safety requirements.</p>
+    </div>
+
+</main>
+
+<footer class="footer">
+    The Z-Transform Knowledge Base — Built for engineers, students, and the curious.
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Region of Convergence — The Z-Transform</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="nav">
+    <a href="index.html">Home</a>
+    <a href="definition.html">Definition</a>
+    <a href="properties.html">Properties</a>
+    <a href="common-pairs.html">Pairs</a>
+    <a href="roc.html" class="active">ROC</a>
+    <a href="inverse.html">Inverse</a>
+    <a href="transfer-functions.html">Transfer Fn</a>
+    <a href="stability.html">Stability</a>
+    <a href="filters.html">Filters</a>
+    <a href="applications.html">Applications</a>
+    <a href="animations.html">Interactive</a>
+</nav>
+
+<header class="hero">
+    <h1>Region of Convergence</h1>
+    <p class="subtitle">The part of the z-plane where the transform actually exists — and why it determines everything</p>
+</header>
+
+<main class="content">
+
+    <div class="stat-strip">
+        <div class="stat-card">
+            <span class="number">|z|</span>
+            <span class="label">Magnitude determines membership</span>
+        </div>
+        <div class="stat-card">
+            <span class="number">Ring</span>
+            <span class="label">Shape of ROC</span>
+        </div>
+        <div class="stat-card">
+            <span class="number">∅</span>
+            <span class="label">No poles inside ROC</span>
+        </div>
+    </div>
+
+    <div class="explanation">
+        <h4>Why the ROC matters</h4>
+        <p>The Z-transform is an infinite sum. Like any infinite series, it converges for some values of z and diverges for others. The set of z values where X(z) converges is called the Region of Convergence (ROC). Without specifying the ROC, the Z-transform is ambiguous — the same algebraic expression X(z) can correspond to completely different time-domain signals.</p>
+    </div>
+
+    <h2>Shape of the ROC</h2>
+
+    <div class="explanation">
+        <h4>Always an annulus (ring)</h4>
+        <p>The ROC of any Z-transform is always a ring-shaped region in the z-plane:</p>
+    </div>
+
+    <div class="formula">
+        R₁ < |z| < R₂
+    </div>
+
+    <div class="explanation">
+        <p>This is because convergence depends only on |z|, not on the angle of z. If X(z) converges at some z₀, it converges at every point with the same magnitude. The boundaries R₁ and R₂ are determined by the pole locations of X(z).</p>
+        <p>Special cases:</p>
+        <ul>
+            <li><strong>Right-sided (causal) signals:</strong> ROC is the exterior of a circle: |z| > R₁ (R₂ = ∞)</li>
+            <li><strong>Left-sided (anti-causal) signals:</strong> ROC is the interior of a circle: |z| < R₂ (R₁ = 0)</li>
+            <li><strong>Two-sided signals:</strong> ROC is a proper ring: R₁ < |z| < R₂</li>
+            <li><strong>Finite-duration signals:</strong> ROC is the entire z-plane (possibly excluding z = 0 or z = ∞)</li>
+        </ul>
+    </div>
+
+    <div class="analogy">The ROC is like the safe operating range of a pressure vessel. The vessel (the sum) can handle pressures (|z| values) in a specific band — too high and it bursts outward (the positive-n terms diverge), too low and it collapses inward (the negative-n terms diverge). The safe range is always a ring between two pressure limits.</div>
+
+    <h2>ROC Rules</h2>
+
+    <div class="explanation">
+        <h4>The seven rules you need</h4>
+        <ol>
+            <li><strong>The ROC is a ring</strong> centred on the origin: R₁ < |z| < R₂</li>
+            <li><strong>The ROC contains no poles.</strong> By definition — X(z) is infinite at a pole, so it can't converge there.</li>
+            <li><strong>Finite-duration sequences:</strong> ROC is the entire z-plane, except possibly z = 0 and/or z = ∞</li>
+            <li><strong>Right-sided sequences:</strong> ROC extends outward from the outermost pole: |z| > max pole</li>
+            <li><strong>Left-sided sequences:</strong> ROC extends inward from the innermost pole: |z| < min pole</li>
+            <li><strong>Two-sided sequences:</strong> ROC is a ring between consecutive pole radii</li>
+            <li><strong>The ROC is a connected region</strong> — never a union of disjoint rings</li>
+        </ol>
+    </div>
+
+    <h2>ROC and Causality</h2>
+
+    <div class="explanation">
+        <h4>The exterior means causal</h4>
+        <p>A right-sided (causal) sequence has x[n] = 0 for n < 0. Its Z-transform sum has only non-negative powers of z⁻¹, which converge for large |z|. Therefore:</p>
+        <ul>
+            <li><strong>Causal</strong> → ROC is the exterior of a circle containing the outermost pole</li>
+            <li><strong>Anti-causal</strong> → ROC is the interior of a circle inside the innermost pole</li>
+            <li><strong>Stable + causal</strong> → ROC is the exterior of a circle AND includes the unit circle → all poles inside unit circle</li>
+        </ul>
+    </div>
+
+    <div class="highlight-fact">
+        A system is both causal AND stable if and only if ALL poles lie strictly inside the unit circle.
+    </div>
+
+    <h2>The Ambiguity Example</h2>
+
+    <div class="explanation">
+        <h4>Same X(z), three different signals</h4>
+        <p>Consider:</p>
+    </div>
+
+    <div class="formula">
+        X(z) = z² / [(z − ½)(z − 2)]
+    </div>
+
+    <div class="explanation">
+        <p>Poles at z = ½ and z = 2. There are three possible ROCs:</p>
+        <ol>
+            <li><strong>|z| > 2:</strong> Both terms are causal → x[n] = [2ⁿ − (½)ⁿ] · 2 · u[n]. Right-sided, unstable.</li>
+            <li><strong>½ < |z| < 2:</strong> The ½-pole term is causal, the 2-pole term is anti-causal → a two-sided signal. Stable (ROC includes unit circle).</li>
+            <li><strong>|z| < ½:</strong> Both terms are anti-causal → x[n] = −[2ⁿ − (½)ⁿ] · 2 · u[−n−1]. Left-sided, unstable.</li>
+        </ol>
+        <p>Three completely different time-domain sequences — same X(z) formula. The ROC is what disambiguates.</p>
+    </div>
+
+    <div class="analogy">This ambiguity is like reading the word "bank" without context. It could mean a riverbank, a financial institution, or a billiard shot. The ROC is the context that resolves the ambiguity — it tells you which meaning (which signal) the speaker (the transform) intends.</div>
+
+    <h2>ROC and the Unit Circle</h2>
+
+    <div class="explanation">
+        <h4>The DTFT exists when the ROC includes the unit circle</h4>
+        <p>The DTFT of x[n] is obtained by evaluating X(z) on the unit circle (z = e<sup>jω</sup>). This evaluation is only valid if the unit circle lies within the ROC. Therefore:</p>
+        <ul>
+            <li>Stable signals have a DTFT (unit circle in ROC)</li>
+            <li>Unstable signals do NOT have a DTFT — their Z-transform exists, but you can't evaluate it on the unit circle because the sum diverges there</li>
+        </ul>
+        <p>This is one reason the Z-transform is more general than the DTFT: it can analyse unstable systems that the DTFT cannot even represent.</p>
+    </div>
+
+    <h2>Computing the ROC</h2>
+
+    <div class="explanation">
+        <h4>From poles and signal type</h4>
+        <p>Given a rational X(z) = N(z)/D(z):</p>
+        <ol>
+            <li>Find all poles (roots of D(z))</li>
+            <li>Order poles by magnitude: |p₁| ≤ |p₂| ≤ ... ≤ |pₙ|</li>
+            <li>The possible ROCs are the rings between consecutive pole magnitudes, plus the exterior and interior</li>
+            <li>Choose based on the signal type:
+                <ul>
+                    <li>If causal: pick the exterior |z| > |pₙ|</li>
+                    <li>If anti-causal: pick the interior |z| < |p₁|</li>
+                    <li>If two-sided: pick a ring between some |pᵢ| < |z| < |pᵢ₊₁|</li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+
+    <h2>ROC Under Operations</h2>
+
+    <div class="explanation">
+        <h4>How properties affect convergence</h4>
+        <ul>
+            <li><strong>Addition:</strong> ROC(X+Y) ⊇ ROC(X) ∩ ROC(Y) — might be larger due to cancellation</li>
+            <li><strong>Multiplication (convolution):</strong> ROC(X·Y) ⊇ ROC(X) ∩ ROC(Y)</li>
+            <li><strong>Scaling by aⁿ:</strong> ROC scales by |a| — all boundaries multiply by |a|</li>
+            <li><strong>Time reversal:</strong> ROC inverts — R₁ < |z| < R₂ becomes 1/R₂ < |z| < 1/R₁</li>
+        </ul>
+    </div>
+
+    <div class="question-box">
+        <h4>Open Questions</h4>
+        <ul>
+            <li>For non-rational Z-transforms (transcendental X(z)), how do we characterise ROC boundaries?</li>
+            <li>Can the ROC concept be generalised to multivariate Z-transforms in a computationally tractable way?</li>
+            <li>What is the relationship between the ROC and the convergence radius of related Dirichlet series?</li>
+        </ul>
+    </div>
+
+    <div class="speculation-box">
+        <h4>The ROC as a window into signal "energy direction"</h4>
+        <p>The ROC encodes which direction in time the signal's energy is concentrated. An outward ROC (|z| > R) means the signal's energy moves forward in time — it's causal. An inward ROC (|z| < R) means energy moves backward — anti-causal. A ring means energy is spread in both directions but bounded. In this view, the ROC is not just a convergence technicality — it's a physical statement about where the signal "lives" in time and how fast it grows or decays.</p>
+        <p class="caveat">This "energy direction" interpretation is the author's pedagogical framing. While consistent with the mathematics, it's not standard terminology in DSP literature and should not be cited as a formal definition.</p>
+    </div>
+
+    <div class="page-nav">
+        <a href="common-pairs.html" class="prev">← Common Pairs</a>
+        <a href="inverse.html" class="next">Inverse Z-Transform →</a>
+    </div>
+
+</main>
+
+<footer class="footer">
+    The Z-Transform Knowledge Base
+</footer>
+
+</body>
+</html>

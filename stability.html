@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stability — The Z-Transform</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="nav">
+    <a href="index.html">Home</a>
+    <a href="definition.html">Definition</a>
+    <a href="properties.html">Properties</a>
+    <a href="common-pairs.html">Pairs</a>
+    <a href="roc.html">ROC</a>
+    <a href="inverse.html">Inverse</a>
+    <a href="transfer-functions.html">Transfer Fn</a>
+    <a href="stability.html" class="active">Stability</a>
+    <a href="filters.html">Filters</a>
+    <a href="applications.html">Applications</a>
+    <a href="animations.html">Interactive</a>
+</nav>
+
+<header class="hero">
+    <h1>Stability</h1>
+    <p class="subtitle">When does a system behave? The unit circle criterion and tests for discrete-time stability</p>
+</header>
+
+<main class="content">
+
+    <div class="stat-strip">
+        <div class="stat-card">
+            <span class="number">|p| < 1</span>
+            <span class="label">Stability condition</span>
+        </div>
+        <div class="stat-card">
+            <span class="number">BIBO</span>
+            <span class="label">Bounded-input bounded-output</span>
+        </div>
+        <div class="stat-card">
+            <span class="number">○</span>
+            <span class="label">Unit circle boundary</span>
+        </div>
+    </div>
+
+    <h2>BIBO Stability</h2>
+
+    <div class="explanation">
+        <h4>The definition</h4>
+        <p>A discrete-time LTI system is <strong>BIBO stable</strong> (bounded-input, bounded-output) if every bounded input produces a bounded output. Formally: if |x[n]| ≤ M for all n, then |y[n]| ≤ K for all n, for some finite K.</p>
+        <p>The equivalent conditions (any one implies the others):</p>
+        <ol>
+            <li><strong>Time domain:</strong> The impulse response is absolutely summable: Σ|h[n]| < ∞</li>
+            <li><strong>Z-domain:</strong> The ROC of H(z) includes the unit circle</li>
+            <li><strong>Pole condition (causal systems):</strong> All poles of H(z) lie strictly inside the unit circle: |pᵢ| < 1 for all i</li>
+        </ol>
+    </div>
+
+    <div class="highlight-fact">
+        For a causal LTI system: STABLE ⟺ all poles strictly inside the unit circle.
+    </div>
+
+    <div class="analogy">The unit circle is the stability boundary for discrete systems, just as the imaginary axis is for continuous systems. Think of it as a fence around a paddock. Poles are horses. If all horses (poles) are inside the fence (unit circle), the system is tame — bounded inputs give bounded outputs. If any horse escapes (pole outside the circle), the system runs wild — outputs grow without bound.</div>
+
+    <h2>Why the Unit Circle?</h2>
+
+    <div class="explanation">
+        <h4>The geometric argument</h4>
+        <p>A pole at z = p contributes a mode pⁿ to the impulse response. The absolute value is |p|ⁿ:</p>
+        <ul>
+            <li>|p| < 1: |p|ⁿ → 0 as n → ∞ (decaying — stable contribution)</li>
+            <li>|p| = 1: |p|ⁿ = 1 for all n (persistent — marginally stable)</li>
+            <li>|p| > 1: |p|ⁿ → ∞ as n → ∞ (growing — unstable contribution)</li>
+        </ul>
+        <p>For the impulse response to be absolutely summable, every mode must decay, which requires every pole strictly inside the circle.</p>
+    </div>
+
+    <h2>Marginal Stability</h2>
+
+    <div class="explanation">
+        <h4>Poles on the unit circle</h4>
+        <p>A pole at |p| = 1 produces a mode that neither decays nor grows. This is <strong>marginally stable</strong>:</p>
+        <ul>
+            <li>Simple pole at z = 1: produces a constant (DC) — the system integrates</li>
+            <li>Simple pole at z = −1: produces alternating ±1 — oscillation at Nyquist frequency</li>
+            <li>Simple conjugate poles at e<sup>±jθ</sup>: produces a permanent sinusoid at frequency θ</li>
+            <li>Repeated pole on the unit circle: UNSTABLE — produces n·e<sup>jθn</sup> which grows linearly</li>
+        </ul>
+        <p>Marginally stable systems are not BIBO stable (a bounded input like the unit step can produce an unbounded output through an integrator). But they're useful in practice (oscillators, integrators) when carefully controlled.</p>
+    </div>
+
+    <h2>The Jury Stability Test</h2>
+
+    <div class="explanation">
+        <h4>Testing without finding roots</h4>
+        <p>For high-order polynomials, finding roots numerically can be unreliable. The Jury test determines stability algebraically from the polynomial coefficients alone.</p>
+        <p>Given the characteristic polynomial D(z) = aₙzⁿ + aₙ₋₁zⁿ⁻¹ + ... + a₁z + a₀:</p>
+    </div>
+
+    <div class="explanation">
+        <h4>Necessary conditions (quick checks)</h4>
+        <ol>
+            <li><strong>D(1) > 0:</strong> No pole at z = 1</li>
+            <li><strong>(−1)ⁿ · D(−1) > 0:</strong> No pole at z = −1</li>
+            <li><strong>|a₀| < |aₙ|:</strong> Product of pole magnitudes less than 1</li>
+        </ol>
+        <p>If any of these fail, the system is immediately unstable — no further testing needed.</p>
+    </div>
+
+    <div class="explanation">
+        <h4>The Jury table</h4>
+        <p>If the necessary conditions pass, construct the Jury array:</p>
+        <ol>
+            <li>Row 1: coefficients [aₙ, aₙ₋₁, ..., a₁, a₀]</li>
+            <li>Row 2: reversed [a₀, a₁, ..., aₙ₋₁, aₙ]</li>
+            <li>Row 3: Row 1 − (a₀/aₙ)·Row 2 (drop last element)</li>
+            <li>Row 4: reverse of Row 3</li>
+            <li>Continue until 1 element remains</li>
+        </ol>
+        <p>The system is stable if and only if all first elements of odd-numbered rows are positive (assuming aₙ > 0).</p>
+    </div>
+
+    <h3>Example: Second-Order System</h3>
+
+    <div class="formula">
+        D(z) = z² + a₁z + a₂
+    </div>
+
+    <div class="explanation">
+        <p>The stability conditions simplify to three inequalities (the "stability triangle"):</p>
+    </div>
+
+    <div class="formula">
+        D(1) > 0  →  1 + a₁ + a₂ > 0
+        <br>
+        D(−1) > 0  →  1 − a₁ + a₂ > 0
+        <br>
+        |a₂| < 1
+    </div>
+
+    <div class="explanation">
+        <p>These three inequalities define a triangular region in the (a₁, a₂) plane. Any second-order system with coefficients inside this triangle is stable. The vertices of the triangle are at (−2, 1), (2, 1), and (0, −1).</p>
+    </div>
+
+    <div class="analogy">The stability triangle is like a safe zone on a map. You can design any second-order filter by picking a point (a₁, a₂) — as long as it's inside the triangle, your filter is guaranteed stable. Stray outside and it blows up. The triangle's shape explains why highly resonant filters (poles close to the unit circle) are sensitive to coefficient quantisation — they sit near the triangle's edges.</div>
+
+    <h2>Schur-Cohn Criterion</h2>
+
+    <div class="explanation">
+        <h4>A matrix formulation</h4>
+        <p>An alternative to the Jury test: form the Schur-Cohn matrix from the polynomial coefficients. All eigenvalues of this matrix have magnitude less than 1 if and only if the original polynomial is stable. This formulation is more suitable for computer implementation and connects stability testing to linear algebra.</p>
+    </div>
+
+    <h2>Stability Under Quantisation</h2>
+
+    <div class="explanation">
+        <h4>When finite precision threatens stability</h4>
+        <p>In actual hardware, coefficients are represented with finite precision (e.g., 16-bit fixed point). A pole designed to be at |p| = 0.99 might be quantised to |p| = 1.01 — suddenly unstable. This is called <strong>coefficient sensitivity</strong>.</p>
+        <p>Key facts:</p>
+        <ul>
+            <li>Higher-order systems are more sensitive to coefficient quantisation</li>
+            <li>Poles near the unit circle are most vulnerable (small coefficient changes push them across)</li>
+            <li>Cascade of second-order sections is preferred over direct form — keeps each section's poles well-separated from the stability boundary</li>
+            <li>The stability triangle for second-order sections makes quantisation effects geometrically predictable</li>
+        </ul>
+    </div>
+
+    <h2>Stability of Feedback Systems</h2>
+
+    <div class="explanation">
+        <h4>Closed-loop transfer function</h4>
+        <p>For a system with forward path G(z) and feedback path F(z):</p>
+    </div>
+
+    <div class="formula">
+        H(z) = G(z) / [1 + G(z)·F(z)]
+    </div>
+
+    <div class="explanation">
+        <p>Stability requires that all roots of 1 + G(z)·F(z) = 0 lie inside the unit circle. This is the characteristic equation of the closed-loop system. Methods for analysing this include:</p>
+        <ul>
+            <li><strong>Root locus:</strong> Plot how poles move as loop gain varies</li>
+            <li><strong>Nyquist criterion:</strong> Count encirclements of −1 by G(e<sup>jω</sup>)·F(e<sup>jω</sup>)</li>
+            <li><strong>Gain/phase margins:</strong> How much gain increase or phase shift before instability</li>
+        </ul>
+    </div>
+
+    <div class="question-box">
+        <h4>Open Questions</h4>
+        <ul>
+            <li>Can adaptive systems guarantee stability without conservative gain limits?</li>
+            <li>What are the tightest robustness bounds for stability under simultaneous coefficient perturbation?</li>
+            <li>How should stability be defined for AI-in-the-loop control systems with stochastic delays?</li>
+        </ul>
+    </div>
+
+    <div class="speculation-box">
+        <h4>Stability as a design constraint vs. an emergent property</h4>
+        <p>In classical design, we ensure stability explicitly: place poles inside the circle, check with Jury test, add gain margin. But in modern adaptive and learning-based systems, stability often emerges from training rather than being designed in. This creates a tension: emergent stability may be more flexible (the system adapts) but less provable (no formal guarantee). The Z-transform framework gives us tools to verify stability after the fact — even if the system was designed by gradient descent rather than pole placement. Perhaps the future of stability analysis is not "design for stability" but "verify stability continuously at runtime."</p>
+        <p class="caveat">Runtime stability verification for learning-based systems is an active research area (Lyapunov neural networks, safe RL) without mature solutions as of 2026. The tools exist for linear verification but nonlinear guarantees remain limited.</p>
+    </div>
+
+    <div class="page-nav">
+        <a href="transfer-functions.html" class="prev">← Transfer Functions</a>
+        <a href="filters.html" class="next">Filters →</a>
+    </div>
+
+</main>
+
+<footer class="footer">
+    The Z-Transform Knowledge Base
+</footer>
+
+</body>
+</html>

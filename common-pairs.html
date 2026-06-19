@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Common Pairs — The Z-Transform</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="nav">
+    <a href="index.html">Home</a>
+    <a href="definition.html">Definition</a>
+    <a href="properties.html">Properties</a>
+    <a href="common-pairs.html" class="active">Pairs</a>
+    <a href="roc.html">ROC</a>
+    <a href="inverse.html">Inverse</a>
+    <a href="transfer-functions.html">Transfer Fn</a>
+    <a href="stability.html">Stability</a>
+    <a href="filters.html">Filters</a>
+    <a href="applications.html">Applications</a>
+    <a href="animations.html">Interactive</a>
+</nav>
+
+<header class="hero">
+    <h1>Common Pairs</h1>
+    <p class="subtitle">The essential lookup table — signals you'll see again and again</p>
+</header>
+
+<main class="content">
+
+    <div class="stat-strip">
+        <div class="stat-card">
+            <span class="number">δ[n]</span>
+            <span class="label">Unit impulse</span>
+        </div>
+        <div class="stat-card">
+            <span class="number">u[n]</span>
+            <span class="label">Unit step</span>
+        </div>
+        <div class="stat-card">
+            <span class="number">aⁿ</span>
+            <span class="label">Exponential</span>
+        </div>
+        <div class="stat-card">
+            <span class="number">cos(ω₀n)</span>
+            <span class="label">Sinusoidal</span>
+        </div>
+    </div>
+
+    <div class="explanation">
+        <h4>Why memorise these?</h4>
+        <p>In practice, you rarely compute Z-transforms from the defining sum. Instead, you decompose signals into combinations of these fundamental pairs and use linearity + properties to assemble the answer. Think of this table as your periodic table — the building blocks from which all discrete-time signals are constructed.</p>
+    </div>
+
+    <h2>The Fundamental Pairs</h2>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Signal x[n]</th>
+                <th>Z-Transform X(z)</th>
+                <th>ROC</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>δ[n]</code> (unit impulse)</td>
+                <td><code>1</code></td>
+                <td>All z</td>
+            </tr>
+            <tr>
+                <td><code>δ[n − k]</code> (shifted impulse)</td>
+                <td><code>z⁻ᵏ</code></td>
+                <td>z ≠ 0</td>
+            </tr>
+            <tr>
+                <td><code>u[n]</code> (unit step)</td>
+                <td><code>z / (z − 1)</code></td>
+                <td>|z| > 1</td>
+            </tr>
+            <tr>
+                <td><code>aⁿ · u[n]</code> (causal exponential)</td>
+                <td><code>z / (z − a)</code></td>
+                <td>|z| > |a|</td>
+            </tr>
+            <tr>
+                <td><code>n · aⁿ · u[n]</code> (ramp × exponential)</td>
+                <td><code>az / (z − a)²</code></td>
+                <td>|z| > |a|</td>
+            </tr>
+            <tr>
+                <td><code>n · u[n]</code> (unit ramp)</td>
+                <td><code>z / (z − 1)²</code></td>
+                <td>|z| > 1</td>
+            </tr>
+            <tr>
+                <td><code>n² · u[n]</code></td>
+                <td><code>z(z + 1) / (z − 1)³</code></td>
+                <td>|z| > 1</td>
+            </tr>
+            <tr>
+                <td><code>cos(ω₀n) · u[n]</code></td>
+                <td><code>z(z − cos ω₀) / (z² − 2z cos ω₀ + 1)</code></td>
+                <td>|z| > 1</td>
+            </tr>
+            <tr>
+                <td><code>sin(ω₀n) · u[n]</code></td>
+                <td><code>z sin ω₀ / (z² − 2z cos ω₀ + 1)</code></td>
+                <td>|z| > 1</td>
+            </tr>
+            <tr>
+                <td><code>aⁿcos(ω₀n) · u[n]</code></td>
+                <td><code>z(z − a cos ω₀) / (z² − 2az cos ω₀ + a²)</code></td>
+                <td>|z| > |a|</td>
+            </tr>
+            <tr>
+                <td><code>aⁿsin(ω₀n) · u[n]</code></td>
+                <td><code>az sin ω₀ / (z² − 2az cos ω₀ + a²)</code></td>
+                <td>|z| > |a|</td>
+            </tr>
+            <tr>
+                <td><code>−aⁿ · u[−n−1]</code> (anti-causal)</td>
+                <td><code>z / (z − a)</code></td>
+                <td>|z| < |a|</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Deriving the Key Pairs</h2>
+
+    <h3>Unit Step: u[n] → z/(z−1)</h3>
+
+    <div class="explanation">
+        <h4>From the geometric series</h4>
+        <p>The unit step u[n] = 1 for n ≥ 0, so:</p>
+    </div>
+
+    <div class="formula">
+        X(z) = Σ<sub>n=0</sub><sup>∞</sup> 1 · z⁻ⁿ = Σ<sub>n=0</sub><sup>∞</sup> (z⁻¹)ⁿ = 1/(1 − z⁻¹) = z/(z − 1)
+    </div>
+
+    <div class="explanation">
+        <p>This converges when |z⁻¹| < 1, i.e., |z| > 1. It's just the geometric series formula with ratio z⁻¹.</p>
+    </div>
+
+    <div class="analogy">The unit step is like a tap that turns on at time 0 and never shuts off. Its Z-transform z/(z−1) has a pole at z = 1 — right on the unit circle. This makes intuitive sense: a signal that never decays (constant forever) sits on the boundary between stable and unstable. One nudge toward |z| < 1 and the sum diverges; stay at |z| > 1 and it converges.</div>
+
+    <h3>Exponential: aⁿu[n] → z/(z−a)</h3>
+
+    <div class="explanation">
+        <h4>The workhorse pair</h4>
+        <p>Almost every Z-transform pair reduces to this one. Since aⁿu[n] is a geometric sequence:</p>
+    </div>
+
+    <div class="formula">
+        X(z) = Σ<sub>n=0</sub><sup>∞</sup> aⁿ · z⁻ⁿ = Σ<sub>n=0</sub><sup>∞</sup> (a/z)ⁿ = 1/(1 − a/z) = z/(z − a)
+    </div>
+
+    <div class="explanation">
+        <p>Converges when |a/z| < 1, i.e., |z| > |a|. The pole is at z = a. If |a| < 1, the sequence decays and the pole is inside the unit circle. If |a| > 1, the sequence grows and the pole is outside — the system is unstable.</p>
+    </div>
+
+    <h3>Sinusoidal: cos(ω₀n)u[n]</h3>
+
+    <div class="explanation">
+        <h4>Euler's formula splits it into exponentials</h4>
+        <p>Using cos(ω₀n) = ½[e<sup>jω₀n</sup> + e<sup>−jω₀n</sup>] and applying the exponential pair with a = e<sup>±jω₀</sup>:</p>
+    </div>
+
+    <div class="formula">
+        Z{cos(ω₀n)·u[n]} = ½ · z/(z − e<sup>jω₀</sup>) + ½ · z/(z − e<sup>−jω₀</sup>)
+        <br><br>
+        = z(z − cos ω₀) / (z² − 2z cos ω₀ + 1)
+    </div>
+
+    <div class="explanation">
+        <p>The two poles are at z = e<sup>±jω₀</sup> — a conjugate pair on the unit circle. This reflects the fact that an undamped sinusoid is marginally stable (neither growing nor decaying). Add a factor of aⁿ with |a| < 1, and the poles move inside the circle — a damped oscillation.</p>
+    </div>
+
+    <h2>The Anti-Causal Pair</h2>
+
+    <div class="explanation">
+        <h4>Same formula, different ROC, different signal</h4>
+        <p>Here's a critical subtlety: X(z) = z/(z−a) corresponds to <em>two different</em> time-domain sequences depending on the ROC:</p>
+        <ul>
+            <li><strong>ROC: |z| > |a|</strong> → causal: x[n] = aⁿ · u[n]</li>
+            <li><strong>ROC: |z| < |a|</strong> → anti-causal: x[n] = −aⁿ · u[−n−1]</li>
+        </ul>
+        <p>The algebraic expression is identical — only the region of convergence distinguishes them. This is why the ROC is not optional metadata; it's essential for unique inversion.</p>
+    </div>
+
+    <div class="highlight-fact">
+        The ROC is part of the Z-transform. Without it, X(z) is ambiguous.
+    </div>
+
+    <h2>Building Complex Signals</h2>
+
+    <div class="explanation">
+        <h4>Combine pairs with properties</h4>
+        <p>Any signal that appears in practice can be expressed as a combination of these pairs using the properties from the previous section:</p>
+        <ul>
+            <li><strong>Delayed exponential</strong> aⁿ⁻ᵏu[n−k]: time-shift the exponential pair → z⁻ᵏ · z/(z−a)</li>
+            <li><strong>Exponential ramp</strong> n·aⁿu[n]: differentiate the exponential pair → az/(z−a)²</li>
+            <li><strong>Sum of exponentials</strong>: partial fraction decomposition → sum of z/(z−aᵢ) terms</li>
+        </ul>
+        <p>This is precisely how inverse Z-transforms work: factor X(z) into partial fractions, look up each term in this table.</p>
+    </div>
+
+    <div class="question-box">
+        <h4>Open Questions</h4>
+        <ul>
+            <li>What is the "natural" discrete-time signal that plays the role of the Gaussian (which has no closed-form Z-transform)?</li>
+            <li>Are there useful Z-transform pairs for heavy-tailed discrete distributions (power law sequences)?</li>
+            <li>Can we build a "fast Z-transform" algorithm analogous to the FFT for arbitrary z-plane evaluation?</li>
+        </ul>
+    </div>
+
+    <div class="speculation-box">
+        <h4>The exponential pair as the atom of discrete systems</h4>
+        <p>In continuous time, everything decomposes into complex exponentials e<sup>st</sup> (the Laplace eigenfunctions). In discrete time, everything decomposes into geometric sequences aⁿ (the Z-transform eigenfunctions). The pair aⁿu[n] ↔ z/(z−a) is the atom: every rational Z-transform is a sum of these atoms (via partial fractions), every stable discrete system is a superposition of decaying geometrics, and every pole in H(z) contributes one such mode to the impulse response. Master this one pair and you've understood the entire machinery.</p>
+        <p class="caveat">This "one pair rules them all" perspective is pedagogically powerful but technically limited to rational Z-transforms. Non-rational transforms (e.g., time-limited sequences with many terms, or transcendental functions of z) don't decompose this way.</p>
+    </div>
+
+    <div class="page-nav">
+        <a href="properties.html" class="prev">← Properties</a>
+        <a href="roc.html" class="next">Region of Convergence →</a>
+    </div>
+
+</main>
+
+<footer class="footer">
+    The Z-Transform Knowledge Base
+</footer>
+
+</body>
+</html>
